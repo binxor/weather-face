@@ -26,10 +26,6 @@ const WeatherIcon = (props) => {
 
   return (
     <ReactAnimatedWeather
-      // icon={defaults.icon}
-      // color={defaults.color}
-      // size={defaults.size}
-      // animate={defaults.animate}
       icon={icon} size={size} color={color} animate={true}
     />
   )

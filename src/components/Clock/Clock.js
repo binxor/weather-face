@@ -2,14 +2,13 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, Paper } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   clock: {
     font: 'consolas',
-    fontSize: '4.2rem',
-    height: '22vh',
-    marginTop: '17%'
+    fontSize: '4.0rem',
+    height: '20vh',
+    marginTop: '15%'
   }
 }))
 

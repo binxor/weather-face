@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, Icon, Paper } from '@material-ui/core'
-import Brightness2OutlinedIcon from '@material-ui/icons/Brightness2Outlined';
+import { Grid } from '@material-ui/core'
 
 import Clock from '../Clock/Clock'
 import Weather from '../Weather/Weather';
@@ -11,19 +10,22 @@ import Humidity from '../Humidity/Humidity';
 import Temperature from '../Temperature/Temperature';
 
 import '../../containers/App/App.css'
+import Trend from '../Trend/Trend';
 
 const useStyles = makeStyles(theme => ({
+  noTop: {
+    paddingTop: '5px'
+  },
   readings: {
-    height: '25vh',
-    marginTop: '5%'
-
+    height: '15vh',
+    marginTop: '10%'
   }
 }))
 
 const Conditions = (props) => {
   const { } = props
 
-  const [ size, setSize ] = useState(120)
+  const [ size, setSize ] = useState(100)
   const [ color, setColor ] = useState('lightblue')
 
   const classes = useStyles()
@@ -39,16 +41,34 @@ const Conditions = (props) => {
         </Grid>
         <Grid item sm></Grid>
         <Grid container direction='row' justify='space-evenly' spacing={4}>
-          <Grid item sm></Grid>
+          <Grid item sm={2}></Grid>
           <Grid item sm className={classes.readings}>
-            <Temperature />
+            <Grid container direction='column' justify='space-around' spacing={0}>
+              <Temperature />
+            </Grid>
           </Grid>
           <Grid item sm className={classes.readings}>
-            <Humidity />
+            <Grid container direction='column' justify='space-around' spacing={0}>
+              <Humidity />
+            </Grid>
           </Grid>
-          <Grid item sm></Grid>
+          <Grid item sm={2}></Grid>
         </Grid>
-      </Grid>
+        <Grid container direction='row' justify='space-evenly' spacing={4}>
+          <Grid item sm={2}></Grid>
+          <Grid item sm>
+            <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
+              <Trend />
+            </Grid>
+          </Grid>
+          <Grid item sm>
+            <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
+              <Trend />
+            </Grid>
+          </Grid>
+          <Grid item sm={2}></Grid>
+        </Grid>
+       </Grid>
     </>
   )
 }

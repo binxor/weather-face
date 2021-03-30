@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
-// import { Grid, Icon, Paper } from '@material-ui/core'
 import WeatherIcon from '../WeatherIcon/WeatherIcon'
 
 const useStyles = makeStyles(theme => ({
