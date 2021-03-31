@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
+import { getTemperature } from '../../store/weather/lenses'
 
 const useStyles = makeStyles(theme => ({
   text: {
@@ -10,22 +11,21 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Temperature = (props) => {
-  const { } = props
+  const { temperature } = props
 
   const classes = useStyles()
 
   return (
-    <div className={classes.text}>75<small>°</small></div>
+    <div className={classes.text}>{temperature}<small>°</small></div>
   )
 }
 
-// const mapStateToProps = (state) => ({
+const mapStateToProps = (state) => ({
+  temperature: getTemperature(state.weather)
+})
 
-// })
+const mapDispatchToProps = {
 
-// const mapDispatchToProps = {
+}
 
-// }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Temperature)
-export default Temperature
+export default connect(mapStateToProps, mapDispatchToProps)(Temperature)

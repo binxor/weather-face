@@ -3,9 +3,11 @@ import ReduxThunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 import appReducer from './app/reducers'
+import weatherReducer from './weather/reducers'
 
 const rootReducer = combineReducers({
-  app: appReducer
+  app: appReducer,
+  weather: weatherReducer
 })
 
 const initializeStore = (initialState) => createStore(

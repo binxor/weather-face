@@ -1,15 +1,19 @@
 import React from 'react'
+import { connect } from 'react-redux'
+
+import { Grid, makeStyles } from '@material-ui/core'
+import { getIsMobile } from '../../store/app/lenses'
+
 import Conditions from '../../components/Conditions/Conditions'
 import Humidity from '../../components/Humidity/Humidity'
 import Temperature from '../../components/Temperature/Temperature'
-import { Grid, makeStyles } from '@material-ui/core'
 import '../App/App.css'
 import Intensity from '../../components/Intensity/Intensity'
 import Trend from '../../components/Trend/Trend'
 
-const IS_MOBILE = window.innerWidth < 500
 
-function Container () {
+const Container = (props) => {
+  const { IS_MOBILE } = props
   const useStyles = (() => makeStyles({
   }))
   const classes = useStyles()
@@ -37,4 +41,12 @@ function Container () {
   )
 }
 
-export default Container;
+const mapStateToProps = (state) => ({
+  IS_MOBILE: getIsMobile(state.app)
+})
+
+const mapDispatchToProps = {
+
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Container)

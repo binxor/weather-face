@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux'
+
 import ReactAnimatedWeather from 'react-animated-weather';
 
 /*
@@ -22,13 +24,23 @@ const defaults = {
 };
 
 const WeatherIcon = (props) => {
-  const { color, icon, size } = props
+  const { color, key, icon, size } = props
 
   return (
-    <ReactAnimatedWeather
-      icon={icon} size={size} color={color} animate={true}
-    />
+    <>
+      <ReactAnimatedWeather key={key}
+        icon={icon} size={size} color={color} animate={true}
+      />
+    </>
   )
 }
 
-export default WeatherIcon;
+const mapStateToProps = (state) => ({
+
+})
+
+const mapDispatchToProps = {
+
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(WeatherIcon)

@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
+import { getHumidity } from '../../store/weather/lenses'
 
 const useStyles = makeStyles(theme => ({
   text: {
@@ -10,22 +11,21 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Humidity = (props) => {
-  const { } = props
+  const { humidity } = props
 
   const classes = useStyles()
 
   return (
-    <div className={classes.text}>60<small>%</small></div>
+    <div className={classes.text}>{humidity}<small>%</small></div>
   )
 }
 
-// const mapStateToProps = (state) => ({
+const mapStateToProps = (state) => ({
+  humidity: getHumidity(state.weather)
+})
 
-// })
+const mapDispatchToProps = {
 
-// const mapDispatchToProps = {
+}
 
-// }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Humidity)
-export default Humidity
+export default connect(mapStateToProps, mapDispatchToProps)(Humidity)

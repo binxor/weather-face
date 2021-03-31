@@ -11,8 +11,7 @@ import Temperature from '../Temperature/Temperature';
 
 import '../../containers/App/App.css'
 import Trend from '../Trend/Trend';
-
-const IS_MOBILE = window.innerWidth < 500
+import { getIsMobile } from '../../store/app/lenses'
 
 const useStyles = makeStyles(theme => ({
   noTop: {
@@ -26,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Conditions = (props) => {
-  const { } = props
+  const { IS_MOBILE } = props
 
   const [ size, setSize ] = useState(120)
   const [ color, setColor ] = useState('lightblue')
@@ -80,13 +79,12 @@ const Conditions = (props) => {
   )
 }
 
-// const mapStateToProps = (state) => ({
+const mapStateToProps = (state) => ({
+  IS_MOBILE: getIsMobile(state.app)
+})
 
-// })
+const mapDispatchToProps = {
 
-// const mapDispatchToProps = {
+}
 
-// }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Conditions)
-export default Conditions
+export default connect(mapStateToProps, mapDispatchToProps)(Conditions)

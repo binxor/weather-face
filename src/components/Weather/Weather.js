@@ -3,32 +3,35 @@ import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
 import WeatherIcon from '../WeatherIcon/WeatherIcon'
+import { getIcon, getName } from '../../store/weather/lenses'
 
 const useStyles = makeStyles(theme => ({
 }))
 
 
 const Weather = (props) => {
-  const { color, size } = props
+  const { color, name, size, icon } = props
 
-  const [icon, setIcon] = useState('PARTLY_CLOUDY_DAY')
+  const [ img, setImg ] = useState(icon)
 
   const classes = useStyles()
 
   return (
     <>
-      <WeatherIcon icon={icon} size={size} color={color} animate={true} />
+      <WeatherIcon key={icon} icon={icon} size={size} color={color} animate={true} />
+      <br/>
+      {name}
     </>
   )
 }
 
-// const mapStateToProps = (state) => ({
+const mapStateToProps = (state) => ({
+  name: getName(state.weather),
+  icon: getIcon(state.weather)
+})
 
-// })
+const mapDispatchToProps = {
 
-// const mapDispatchToProps = {
+}
 
-// }
-
-// export default connect(mapStateToProps, mapDispatchToProps)(Weather)
-export default Weather
+export default connect(mapStateToProps, mapDispatchToProps)(Weather)
