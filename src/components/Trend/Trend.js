@@ -10,18 +10,18 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Trend = (props) => {
-  const { } = props
+  const { color } = props
 
   const classes = useStyles()
 
   const data = [ 5, 10, 5, 20, 8, 15 ]
 
-  const style = { 'strokeWidth': '5px', 'fill': 'none' }
+  const style = { 'strokeWidth': '3px', 'fill': 'none' }
 
   return (
     <>
-      <Sparklines data={data} width={100} height={90} margin={0}>
-        <SparklinesCurve color="lightblue" style={style} />
+      <Sparklines data={data} width={90} height={40} margin={2}>
+        <SparklinesCurve color={color} style={style} />
       </Sparklines>
     </>
   )

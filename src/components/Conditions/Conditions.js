@@ -12,20 +12,23 @@ import Temperature from '../Temperature/Temperature';
 import '../../containers/App/App.css'
 import Trend from '../Trend/Trend';
 
+const IS_MOBILE = window.innerWidth < 500
+
 const useStyles = makeStyles(theme => ({
   noTop: {
     paddingTop: '5px'
   },
   readings: {
-    height: '15vh',
-    marginTop: '10%'
+    height: '10%',
+    marginTop: '10%',
+    marginBottom: '0px'
   }
 }))
 
 const Conditions = (props) => {
   const { } = props
 
-  const [ size, setSize ] = useState(100)
+  const [ size, setSize ] = useState(120)
   const [ color, setColor ] = useState('lightblue')
 
   const classes = useStyles()
@@ -40,35 +43,39 @@ const Conditions = (props) => {
           <Weather size={size} color={color} />
         </Grid>
         <Grid item sm></Grid>
-        <Grid container direction='row' justify='space-evenly' spacing={4}>
-          <Grid item sm={2}></Grid>
-          <Grid item sm className={classes.readings}>
-            <Grid container direction='column' justify='space-around' spacing={0}>
-              <Temperature />
+      </Grid>
+      { !IS_MOBILE &&
+        <Grid container direction='column' spacing={0}>
+          <Grid container direction='row'>
+            <Grid item sm={2}></Grid>
+            <Grid item sm xs={6} className={classes.readings}>
+              <Grid container direction='column' justify='space-around' spacing={0}>
+                <Temperature />
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid item sm className={classes.readings}>
-            <Grid container direction='column' justify='space-around' spacing={0}>
-              <Humidity />
+            <Grid item sm xs={6} className={classes.readings}>
+              <Grid container direction='column' justify='space-around' spacing={0}>
+                <Humidity />
+              </Grid>
             </Grid>
+            <Grid item sm={2}></Grid>
           </Grid>
-          <Grid item sm={2}></Grid>
+          <Grid container direction='row' justify='space-evenly' spacing={4}>
+            <Grid item sm={2} xs={0}></Grid>
+            <Grid item sm={4} xs={4} >
+              <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
+                <Trend color={"orange"} />
+              </Grid>
+            </Grid>
+            <Grid item sm={4} xs={4} >
+              <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
+                <Trend color={"lightblue"} />
+              </Grid>
+            </Grid>
+            <Grid item sm={2} xs={0}></Grid>
+          </Grid>
         </Grid>
-        <Grid container direction='row' justify='space-evenly' spacing={4}>
-          <Grid item sm={2}></Grid>
-          <Grid item sm>
-            <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
-              <Trend />
-            </Grid>
-          </Grid>
-          <Grid item sm>
-            <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
-              <Trend />
-            </Grid>
-          </Grid>
-          <Grid item sm={2}></Grid>
-        </Grid>
-       </Grid>
+      }
     </>
   )
 }

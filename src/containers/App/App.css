@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: #282c34;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -11,6 +12,7 @@
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,17 +36,64 @@
 
 /* USER DEFINED */
 .highlight {
-  border: 1px solid lightblue;
+  /* border: 1px solid lightblue; */
 }
 
 .outer {
   width: 90vw;
   height: 95vh;
-  align-items: center;
-  border: 1px solid lightcoral;
+  margin: 0px;
+  padding: 0px;
+  /* align-items: center; */
+  /* border: 1px solid lightcoral; */
 }
 
 .padded {
   padding: 20px 30px;
   height: 100%;
+}
+
+.padded-range {
+  /* padding: 50px 30px; */
+  /* height: 100%; */
+  padding-top: 40px;
+}
+
+.range-chart {
+  background-color: var(--color-primary);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  height: 55vh;
+  width: 4em;
+  overflow:hidden;
+  opacity: 80%;
+}
+
+.range-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.range-label {
+  color: var(--color-primary-offWhite);
+  font:700 1.25rem sans-serif;
+  text-align: center;
+}
+
+
+.range-title {
+  background-color: var(--color-primary);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  height: 5vh;
+  width: 4em;
+  overflow:hidden;
+  opacity: 80%;
+}
+
+.text {
+  font-size: '2.2rem'
 }

@@ -6,9 +6,10 @@ import { makeStyles } from '@material-ui/core/styles'
 const useStyles = makeStyles(theme => ({
   clock: {
     font: 'consolas',
-    fontSize: '4.0rem',
-    height: '20vh',
-    marginTop: '15%'
+    fontSize: '3.8rem',
+    marginTop: '0%',
+    paddingBottom: '15%',
+
   }
 }))
 
@@ -19,7 +20,7 @@ const Clock = (props) => {
 
   return (
     <>
-      <div className={classes.clock}>0:00</div>
+      <div className={classes.clock}>20:00</div>
     </>
   )
 }
