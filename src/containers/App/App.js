@@ -1,7 +1,9 @@
+import React from 'react'
 import Container from '../Container/Container'
+
 import './App.css';
 
-function App() {
+function App () {
   return (
     <div className="App">
       <header className="App-header">
@@ -11,4 +13,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
