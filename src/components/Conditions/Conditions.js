@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -12,6 +12,7 @@ import Temperature from '../Temperature/Temperature';
 import '../../containers/App/App.css'
 import Trend from '../Trend/Trend';
 import { getIsMobile } from '../../store/app/lenses'
+import { getWeather } from '../../store/weather/actions'
 
 const useStyles = makeStyles(theme => ({
   noTop: {
@@ -25,7 +26,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Conditions = (props) => {
-  const { IS_MOBILE } = props
+  const { getWeatherAction, IS_MOBILE } = props
+
+  useEffect(() => { 
+    getWeatherAction() 
+  }, [])
 
   const [ size, setSize ] = useState(120)
   const [ color, setColor ] = useState('lightblue')
@@ -84,7 +89,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-
+  getWeatherAction: getWeather
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Conditions)

@@ -9,6 +9,9 @@ export const getHumidity = (state) => R.view(humidityL(), state)
 export const iconL = () => R.lensProp('icon')
 export const getIcon = (state) => R.view(iconL(), state)
 
+export const imageL = () => R.lensProp('image')
+export const getImage = (state) => R.view(imageL(), state)
+
 export const luxL = () => R.lensProp('lux')
 export const getLux = (state) => R.view(luxL(), state)
 

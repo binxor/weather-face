@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
+import moment from 'moment'
 
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -13,14 +14,27 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
+const getTime = () => moment().format('HH:mm:ss')
+
 const Clock = (props) => {
   const { } = props
 
   const classes = useStyles()
 
+  const [ time, setTime ] = useState(getTime())
+  const [ date, setDate ] = useState(moment().format('ddd, MMM DD'))
+  
+  useEffect(() => {
+    let secTimer = setInterval(() => {
+      setTime(getTime())
+    }, 1000)
+    return () => clearInterval(secTimer)
+  }, [])
+
   return (
     <>
-      <div className={classes.clock}>20:00</div>
+      <div>{date}</div>
+      <div className={classes.clock}>{time}</div>
     </>
   )
 }

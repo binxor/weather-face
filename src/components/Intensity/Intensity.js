@@ -31,7 +31,7 @@ const Intensity = (props) => {
       <Grid container direction="row" justify="space-evenly" alignItems="stretch">
         <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
           <div className={classes.text}>{pressure}</div>
-          BAR
+          ATM
         </Grid>
         <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
           <div className={classes.text}>{lux}</div>
