@@ -9,7 +9,7 @@ const initialState = { //TODO - populate from source
   name: '-',
   pressure: 0,
   temperature: 0,
-  uvi: 0
+  uvi: 0,
 }
 
 const reducer = (state = initialState, action) => {

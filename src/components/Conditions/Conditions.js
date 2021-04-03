@@ -12,7 +12,8 @@ import Temperature from '../Temperature/Temperature';
 import '../../containers/App/App.css'
 import Trend from '../Trend/Trend';
 import { getIsMobile } from '../../store/app/lenses'
-import { getWeather } from '../../store/weather/actions'
+import { getIconUrl } from '../../store/weather/lenses'
+import { getWeather, getWeatherAtLocale } from '../../store/weather/actions'
 
 const useStyles = makeStyles(theme => ({
   noTop: {
@@ -26,11 +27,16 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Conditions = (props) => {
-  const { getWeatherAction, IS_MOBILE } = props
+  const { getWeatherAction, getWeatherAtLocaleAction, iconUrl, IS_MOBILE } = props
+
+  // TODO - modify weather conditions, images, time of day from ticking timer
 
   useEffect(() => { 
-    getWeatherAction() 
+    // getWeatherAction() 
+    getWeatherAtLocaleAction('home_ex')
+    // getWeatherAtLocaleAction('ambilobe_ex')
   }, [])
+
 
   const [ size, setSize ] = useState(120)
   const [ color, setColor ] = useState('lightblue')
@@ -45,6 +51,7 @@ const Conditions = (props) => {
         </Grid>
         <Grid item sm>
           <Weather size={size} color={color} />
+          {/* <img src={iconUrl} /> */}
         </Grid>
         <Grid item sm></Grid>
       </Grid>
@@ -85,11 +92,13 @@ const Conditions = (props) => {
 }
 
 const mapStateToProps = (state) => ({
+  iconUrl: getIconUrl(state.weather),
   IS_MOBILE: getIsMobile(state.app)
 })
 
 const mapDispatchToProps = {
-  getWeatherAction: getWeather
+  getWeatherAction: getWeather,
+  getWeatherAtLocaleAction: getWeatherAtLocale
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Conditions)
