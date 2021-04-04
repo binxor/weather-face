@@ -11,7 +11,7 @@ import '../App/App.css'
 import Intensity from '../../components/Intensity/Intensity'
 import Trend from '../../components/Trend/Trend'
 
-
+// TODO - allow city selection
 const Container = (props) => {
   const { IS_MOBILE } = props
   const useStyles = (() => makeStyles({

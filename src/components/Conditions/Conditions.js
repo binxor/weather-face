@@ -33,8 +33,8 @@ const Conditions = (props) => {
 
   useEffect(() => { 
     // getWeatherAction() 
-    getWeatherAtLocaleAction('home_ex')
-    // getWeatherAtLocaleAction('ambilobe_ex')
+    getWeatherAtLocaleAction('pnw')
+    // getWeatherAtLocaleAction('ambilobe')
   }, [])
 
 

@@ -9,6 +9,7 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
+// TODO - integrate trends
 const Trend = (props) => {
   const { color } = props
 

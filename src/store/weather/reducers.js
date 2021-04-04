@@ -10,6 +10,7 @@ const initialState = { //TODO - populate from source
   pressure: 0,
   temperature: 0,
   uvi: 0,
+  // TODO - initialize additional metrics
 }
 
 const reducer = (state = initialState, action) => {

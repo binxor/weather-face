@@ -26,8 +26,8 @@ const Clock = (props) => {
   const classes = useStyles()
 
 
-  const [ time, setTime ] = useState('00:00:00')
-  const [ date, setDate ] = useState(getDate('America/Los_Angeles'))
+  const [ time, setTime ] = useState()
+  const [ date, setDate ] = useState()
 
   useEffect(() => {
     if (timeZoneOffset) {

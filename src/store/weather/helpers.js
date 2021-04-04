@@ -1,5 +1,15 @@
 import moment from 'moment-timezone'
+import axios from 'axios'
 
+const LOCAL_PROXY = 'http://localhost:3003/cors-proxy?lat={LAT}&lon={LON}'
+const AMBILOBE_LAT = 33.441792
+const AMBILOBE_LON = -94.037689
+
+const PNW_LAT = 37.714135
+const PNW_LON = -122.499271
+
+// TODO - all hig res, open license images
+// TODO - add additional atmo conditions
 const IMAGE_MAP = {
   day: {
     clear: [ 'day-sky-blue1.jpeg', 'day-sky-clouds4.jpeg' ],
@@ -44,19 +54,21 @@ const IMAGE_MAP_MOBILE = { // TODO - set up device-dependent mobile image mappin
   }
 }
 
-export const formatWeatherData = (data) => {
+export const formatWeatherData = (body) => {
   let formattedData
 
-  let response = data
+  let response = body.data
 
-  let timeOfDay = getTimeOfDay({now: moment().tz(response.timezone).unix(), sunrise: response.current.sunrise, sunset: response.current.sunset})
+  let timeOfDay = getTimeOfDay({ now: moment().tz(response.timezone).unix(), sunrise: response.current.sunrise, sunset: response.current.sunset })
 
+  // TODO - add hourly history/forecast?
+  // TODO - add other measurements below to UI
   formattedData = {
-    cloudiness: response.current.clouds, // %
+    cloudiness: response.current.clouds, // % // TODO - map to images?
     dewPoint: response.current.dewPoint, // convert
     feelsLike: response.current.feels_like, // convert
-    iconUrl: 'http://openweathermap.org/img/wn/' + response.current.weather[ 0 ].icon + '@2x.png',
-    image: mapImageByDesc({desc: response.current.weather[ 0 ].main, phase: timeOfDay}),
+    iconUrl: 'http://openweathermap.org/img/wn/' + response.current.weather[ 0 ].icon + '@2x.png', // TODO - replace these icons
+    image: mapImageByDesc({ desc: response.current.weather[ 0 ].main, phase: timeOfDay }),
     lat: response.lat,
     lon: response.lon,
     locale: response.city,
@@ -67,12 +79,12 @@ export const formatWeatherData = (data) => {
     timeZoneOffset: response.timezone_offset,
     visibility: response.current.visibility, // convert m -> mi
     // brightness: '',
-    humidity: response.current.humidity, // convert
+    humidity: response.current.humidity,
     // icon: 'CLEAR_DAY',
     // lux: 1580.65,
     name: response.current.weather[ 0 ].main,
-    pressure: response.current.pressure, //convert hPa -> ATMO
-    temperature: response.current.temp, // convert
+    pressure: Math.round(100 * response.current.pressure / 1013.25) / 100, //convert hPa -> ATMO
+    temperature: response.current.temp,
     uvi: response.current.uvi,
     windSpeed: response.current.wind_speed,
     windDegrees: response.current.wind_deg,
@@ -83,15 +95,36 @@ export const formatWeatherData = (data) => {
   return formattedData
 }
 
-export const getTimeOfDay = ({now, sunrise, sunset}) => {
+const generateUrl = (locale) => {
+  let lat, lon
+  if (locale == 'ambilobe') { lat = AMBILOBE_LAT; lon = AMBILOBE_LON }
+  if (locale == 'pnw') { lat = PNW_LAT; lon = PNW_LON }
+
+  return LOCAL_PROXY.replace('{LAT}', lat).replace('{LON}', lon)
+}
+
+export const getTimeOfDay = ({ now, sunrise, sunset }) => {
   let phase
-  let threshold = 6000
-  if ( now > sunset + threshold ) phase = 'night'
+  let threshold = 2000
+  if (now > sunset + threshold) phase = 'night'
   else if (now >= sunset - threshold) phase = 'sunset'
   else if (now > sunrise + threshold) phase = 'day'
   else if (now >= sunrise - threshold) phase = 'sunrise'
   else phase = 'night'
   return phase
+}
+
+export const getWeatherFromApi = async (locale) => {
+  const url = generateUrl(locale)
+
+  return await axios.get(url)
+    .then((res) => {
+      return res
+    })
+    .catch((e) => {
+      return {data: {}}
+    })
+
 }
 
 export const getWeather = () => (dispatch) => {
@@ -151,31 +184,32 @@ export const mapImage = (lux) => {
   return './other/' + image
 }
 
-export const mapImageByDesc = ({desc, phase}) => {
+export const mapImageByDesc = ({ desc, phase }) => {
   let image = ''
   switch (desc) {
     case "Clear":
-      image = selectRandomImage(IMAGE_MAP[ phase ]['clear'])
+      image = selectRandomImage(IMAGE_MAP[ phase ][ 'clear' ])
       break
     case "Clouds":
-      image = selectRandomImage(IMAGE_MAP[ phase ]['cloudy'])
+      image = selectRandomImage(IMAGE_MAP[ phase ][ 'cloudy' ])
       break
     case "Drizzle":
-      image = selectRandomImage(IMAGE_MAP[ phase ]['storm'])
+      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
       break
     case "Rain":
-      image = selectRandomImage(IMAGE_MAP[ phase ]['storm'])
+      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
       break
     case "Snow":
-      image = selectRandomImage(IMAGE_MAP[ phase ]['storm'])
+      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
       break
     case "Thunderstorm":
-      image = selectRandomImage(IMAGE_MAP[ phase ]['storm'])
+      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
       break
     default:
       image = selectRandomImage(IMAGE_MAP[ phase ][ 'moonless' ])
       break;
   }
+  // TODO  - map new atmo images to OWM descriptions below
   /*
 
   ID	Main	Description	Icon
@@ -196,7 +230,6 @@ export const mapImageByDesc = ({desc, phase}) => {
 
 const selectRandomImage = (choices) => {
   let randomImage = ''
-  console.log(typeof choices)
   if (typeof choices === 'object') {
     randomImage = choices[ Math.floor(Math.random() * choices.length) ]
   }
