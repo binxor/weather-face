@@ -6,10 +6,16 @@ Compact and modern form factor for current weather conditions
 You know the drill
 1. Get an API key at https://api.openweathermap.org
 
-2. Use your new API key to replace `{YOUR_API_KEY_HERE}` in ./src/server/.env
+2. Create your `env` files
+```
+cp .env_example .env
+cp src/server/.env_example src/server/.env
+```
+
+3. Use your new API key to replace `{YOUR_API_KEY_HERE}` in `./src/server/.env`, in this line:
 
 ```
-1 BASE_URL_OPENWEATHERMAPS=https://api.openweathermap.org/data/2.5/onecall?lat={LAT}&lon={LON}&units=imperial&exclude=hourly,daily&appid={YOUR_API_KEY_HERE}
+BASE_URL_OPENWEATHERMAPS=https://api.openweathermap.org/data/2.5/onecall?lat={LAT}&lon={LON}&units=imperial&exclude=hourly,daily&appid={YOUR_API_KEY_HERE}
 
 ```
 
