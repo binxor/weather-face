@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 
@@ -5,6 +6,9 @@ import Container from '../Container/Container'
 
 import { getImage } from '../../store/weather/lenses'
 import './App.css';
+
+import dotenv from 'dotenv'
+dotenv.config()
 
 const defaultImageStyle = {
   backgroundPosition: 'center',

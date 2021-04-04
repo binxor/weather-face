@@ -15,6 +15,7 @@ import { getIsMobile } from '../../store/app/lenses'
 import { getIconUrl } from '../../store/weather/lenses'
 import { getWeather, getWeatherAtLocale } from '../../store/weather/actions'
 
+const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
 const useStyles = makeStyles(theme => ({
   noTop: {
     paddingTop: '5px'
@@ -33,7 +34,7 @@ const Conditions = (props) => {
 
   useEffect(() => { 
     // getWeatherAction() 
-    getWeatherAtLocaleAction('pnw')
+    getWeatherAtLocaleAction(DEFAULT_CITY)
     // getWeatherAtLocaleAction('ambilobe')
   }, [])
 

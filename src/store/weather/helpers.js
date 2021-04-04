@@ -1,12 +1,13 @@
 import moment from 'moment-timezone'
 import axios from 'axios'
 
-const LOCAL_PROXY = 'http://localhost:3003/cors-proxy?lat={LAT}&lon={LON}'
-const AMBILOBE_LAT = 33.441792
-const AMBILOBE_LON = -94.037689
+const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
+const DEFAULT_LAT = process.env.REACT_APP_DEFAULT_LAT
+const DEFAULT_LON = process.env.REACT_APP_DEFAULT_LON
 
-const PNW_LAT = 37.714135
-const PNW_LON = -122.499271
+const LOCAL_PROXY = process.env.REACT_APP_LOCAL_PROXY
+const AMBILOBE_LAT = process.env.REACT_APP_AMBILOBE_LAT
+const AMBILOBE_LON = process.env.REACT_APP_AMBILOBE_LON
 
 // TODO - all hig res, open license images
 // TODO - add additional atmo conditions
@@ -98,7 +99,7 @@ export const formatWeatherData = (body) => {
 const generateUrl = (locale) => {
   let lat, lon
   if (locale == 'ambilobe') { lat = AMBILOBE_LAT; lon = AMBILOBE_LON }
-  if (locale == 'pnw') { lat = PNW_LAT; lon = PNW_LON }
+  if (locale == DEFAULT_CITY) { lat = DEFAULT_LAT; lon = DEFAULT_LON }
 
   return LOCAL_PROXY.replace('{LAT}', lat).replace('{LON}', lon)
 }
