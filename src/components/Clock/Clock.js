@@ -32,7 +32,6 @@ const Clock = (props) => {
 
   useEffect(() => {
     if (completedRequest === true) {
-      setCity(locale)
       let secTimer = setInterval(() => {
         setTime(getTime(timeZoneOffset))
         setDate(getDate(timeZoneOffset))
@@ -40,6 +39,12 @@ const Clock = (props) => {
       return () => clearInterval(secTimer)
     }
   }, [ completedRequest ])
+
+  useEffect(() => {
+    if (completedRequest === true) {
+      setCity(locale)
+    }
+  }, [ locale ])
 
   return (
     <>

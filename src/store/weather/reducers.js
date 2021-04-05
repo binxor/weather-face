@@ -1,6 +1,8 @@
 import * as R from 'ramda'
 import * as types from './types'
 
+const USE_MOCK_DATA = process.env.REACT_APP_USE_MOCK_DATA === 'true' || process.env.REACT_APP_USE_MOCK_DATA === true
+
 const initialState = { //TODO - populate from source
   brightness: '-',
   humidity: 0,
@@ -10,7 +12,8 @@ const initialState = { //TODO - populate from source
   pressure: 0,
   temperature: 0,
   uvi: 0,
-  completedRequest: false
+  completedRequest: false,
+  useMockData: USE_MOCK_DATA
   // TODO - initialize additional metrics
 }
 
