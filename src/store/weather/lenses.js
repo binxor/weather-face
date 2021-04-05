@@ -3,6 +3,9 @@ import * as R from 'ramda'
 export const brightnessL = () => R.lensProp('brightness')
 export const getBrightness = (state) => R.view(brightnessL(), state)
 
+export const completedRequestL = () => R.lensProp('completedRequest')
+export const getCompletedRequest = (state) => R.view(completedRequestL(), state)
+
 export const humidityL = () => R.lensProp('humidity')
 export const getHumidity = (state) => R.view(humidityL(), state)
 

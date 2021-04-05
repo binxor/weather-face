@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import moment from 'moment-timezone'
 
 import { makeStyles } from '@material-ui/core/styles'
-import { getLocale, getTimeZone, getTimeZoneOffset } from '../../store/weather/lenses'
+import { getCompletedRequest, getLocale, getTimeZone, getTimeZoneOffset } from '../../store/weather/lenses'
 
 const useStyles = makeStyles(theme => ({
   city: {
@@ -21,34 +21,37 @@ const getTime = (offset) => moment().utc().add(offset, 'seconds').format('HH:mm:
 const getDate = (offset) => moment().utc().add(offset, 'seconds').format('ddd, MMM DD')
 
 const Clock = (props) => {
-  const { locale, timeZone, timeZoneOffset } = props
+  const { completedRequest, locale, timeZone, timeZoneOffset } = props
 
   const classes = useStyles()
 
 
-  const [ time, setTime ] = useState()
-  const [ date, setDate ] = useState()
+  const [ time, setTime ] = useState(moment().format('HH:mm:ss'))
+  const [ date, setDate ] = useState(moment().format('ddd, MMM DD'))
+  const [ city, setCity ] = useState('_')
 
   useEffect(() => {
-    if (timeZoneOffset) {
+    if (completedRequest === true) {
+      setCity(locale)
       let secTimer = setInterval(() => {
         setTime(getTime(timeZoneOffset))
         setDate(getDate(timeZoneOffset))
       }, 1000)
       return () => clearInterval(secTimer)
     }
-  }, [timeZoneOffset])
+  }, [ completedRequest ])
 
   return (
     <>
       <div>{date}</div>
       <div className={classes.clock}>{time}</div>
-      <div className={classes.city}>{locale}</div>
+      <div className={classes.city}>{city}</div>
     </>
   )
 }
 
 const mapStateToProps = (state) => ({
+  completedRequest: getCompletedRequest(state.weather),
   locale: getLocale(state.weather),
   timeZone: getTimeZone(state.weather),
   timeZoneOffset: getTimeZoneOffset(state.weather)

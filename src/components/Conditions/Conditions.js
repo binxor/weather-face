@@ -12,8 +12,8 @@ import Temperature from '../Temperature/Temperature';
 import '../../containers/App/App.css'
 import Trend from '../Trend/Trend';
 import { getIsMobile } from '../../store/app/lenses'
-import { getIconUrl } from '../../store/weather/lenses'
-import { getWeather, getWeatherAtLocale } from '../../store/weather/actions'
+import { getCompletedRequest, getIconUrl } from '../../store/weather/lenses'
+import { getWeatherAtLocale } from '../../store/weather/actions'
 
 const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
 const useStyles = makeStyles(theme => ({
@@ -28,12 +28,11 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Conditions = (props) => {
-  const { getWeatherAction, getWeatherAtLocaleAction, iconUrl, IS_MOBILE } = props
+  const { completedRequest, getWeatherAtLocaleAction, iconUrl, IS_MOBILE } = props
 
   // TODO - modify weather conditions, images, time of day from ticking timer
 
-  useEffect(() => { 
-    // getWeatherAction() 
+  useEffect(() => {
     getWeatherAtLocaleAction(DEFAULT_CITY)
     // getWeatherAtLocaleAction('ambilobe')
   }, [])
@@ -93,12 +92,12 @@ const Conditions = (props) => {
 }
 
 const mapStateToProps = (state) => ({
+  completedRequest: getCompletedRequest(state.weather),
   iconUrl: getIconUrl(state.weather),
   IS_MOBILE: getIsMobile(state.app)
 })
 
 const mapDispatchToProps = {
-  getWeatherAction: getWeather,
   getWeatherAtLocaleAction: getWeatherAtLocale
 }
 

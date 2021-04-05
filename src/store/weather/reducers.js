@@ -10,6 +10,7 @@ const initialState = { //TODO - populate from source
   pressure: 0,
   temperature: 0,
   uvi: 0,
+  completedRequest: false
   // TODO - initialize additional metrics
 }
 
@@ -18,7 +19,21 @@ const reducer = (state = initialState, action) => {
     case types.WEATHER_REQUEST:
       return {
         ...state,
-        ...action.payload
+        completedRequest: false,
+        locale: action.payload
+        // ...action.payload // TODO - clear redux `response`
+      }
+    case types.WEATHER_REQUEST_FAILED:
+      return {
+        ...state,
+        ...action.payload,
+        completedRequest: true
+      }
+    case types.WEATHER_REQUEST_SUCCESS:
+      return {
+        ...state,
+        ...action.payload,
+        completedRequest: true
       }
     default:
       return state

@@ -1,5 +1,4 @@
 import moment from 'moment-timezone'
-import axios from 'axios'
 
 const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
 const DEFAULT_LAT = process.env.REACT_APP_DEFAULT_LAT
@@ -58,45 +57,48 @@ const IMAGE_MAP_MOBILE = { // TODO - set up device-dependent mobile image mappin
 export const formatWeatherData = (body) => {
   let formattedData
 
-  let response = body.data
+  try {
+    let response = body.data
 
-  let timeOfDay = getTimeOfDay({ now: moment().tz(response.timezone).unix(), sunrise: response.current.sunrise, sunset: response.current.sunset })
+    let timeOfDay = getTimeOfDay({ now: moment().tz(response.timezone).unix(), sunrise: response.current.sunrise, sunset: response.current.sunset })
 
-  // TODO - add hourly history/forecast?
-  // TODO - add other measurements below to UI
-  formattedData = {
-    cloudiness: response.current.clouds, // % // TODO - map to images?
-    dewPoint: response.current.dewPoint, // convert
-    feelsLike: response.current.feels_like, // convert
-    iconUrl: 'http://openweathermap.org/img/wn/' + response.current.weather[ 0 ].icon + '@2x.png', // TODO - replace these icons
-    image: mapImageByDesc({ desc: response.current.weather[ 0 ].main, phase: timeOfDay }),
-    lat: response.lat,
-    lon: response.lon,
-    locale: response.city,
-    sunrise: response.current.sunrise,
-    sunset: response.current.sunset,
-    timeOfDay: timeOfDay,
-    timeZone: response.timezone,
-    timeZoneOffset: response.timezone_offset,
-    visibility: response.current.visibility, // convert m -> mi
-    // brightness: '',
-    humidity: response.current.humidity,
-    // icon: 'CLEAR_DAY',
-    // lux: 1580.65,
-    name: response.current.weather[ 0 ].main,
-    pressure: Math.round(100 * response.current.pressure / 1013.25) / 100, //convert hPa -> ATMO
-    temperature: response.current.temp,
-    uvi: response.current.uvi,
-    windSpeed: response.current.wind_speed,
-    windDegrees: response.current.wind_deg,
-    windGust: response.current.wind_gust,
-    // "weather": [ { "id": 800, "main": "Clear", "description": "clear sky", "icon": "01d" } ]
+    // TODO - add hourly history/forecast?
+    // TODO - add other measurements below to UI
+    formattedData = {
+      cloudiness: response.current.clouds, // % // TODO - map to images?
+      dewPoint: response.current.dewPoint, // convert
+      feelsLike: response.current.feels_like, // convert
+      iconUrl: 'http://openweathermap.org/img/wn/' + response.current.weather[ 0 ].icon + '@2x.png', // TODO - replace these icons
+      image: mapImageByDesc({ desc: response.current.weather[ 0 ].main, phase: timeOfDay }),
+      lat: response.lat,
+      lon: response.lon,
+      sunrise: response.current.sunrise,
+      sunset: response.current.sunset,
+      timeOfDay: timeOfDay,
+      timeZone: response.timezone,
+      timeZoneOffset: response.timezone_offset,
+      visibility: response.current.visibility, // convert m -> mi
+      // brightness: '',
+      humidity: response.current.humidity,
+      // icon: 'CLEAR_DAY',
+      // lux: 1580.65,
+      name: response.current.weather[ 0 ].main,
+      pressure: Math.round(100 * response.current.pressure / 1013.25) / 100, //convert hPa -> ATMO
+      temperature: response.current.temp,
+      uvi: response.current.uvi,
+      windSpeed: response.current.wind_speed,
+      windDegrees: response.current.wind_deg,
+      windGust: response.current.wind_gust,
+      // "weather": [ { "id": 800, "main": "Clear", "description": "clear sky", "icon": "01d" } ]
+    }
+  } catch (e) {
+    console.log({ e })
   }
 
   return formattedData
 }
 
-const generateUrl = (locale) => {
+export const generateUrl = (locale) => {
   let lat, lon
   if (locale == 'ambilobe') { lat = AMBILOBE_LAT; lon = AMBILOBE_LON }
   if (locale == DEFAULT_CITY) { lat = DEFAULT_LAT; lon = DEFAULT_LON }
@@ -113,34 +115,6 @@ export const getTimeOfDay = ({ now, sunrise, sunset }) => {
   else if (now >= sunrise - threshold) phase = 'sunrise'
   else phase = 'night'
   return phase
-}
-
-export const getWeatherFromApi = async (locale) => {
-  const url = generateUrl(locale)
-
-  return await axios.get(url)
-    .then((res) => {
-      return res
-    })
-    .catch((e) => {
-      return {data: {}}
-    })
-
-}
-
-export const getWeather = () => (dispatch) => {
-  let response = {
-    brightness: '-',
-    humidity: 29.77,
-    icon: 'CLEAR_DAY',
-    lux: 1580.65,
-    name: 'Sunny',
-    pressure: 0.99,
-    temperature: 83.41,
-    uvi: 0.05
-  }
-
-  return response
 }
 
 export const mapBrightness = (lux) => {
