@@ -8,8 +8,6 @@ const LOCAL_PROXY = process.env.REACT_APP_LOCAL_PROXY
 const AMBILOBE_LAT = process.env.REACT_APP_AMBILOBE_LAT
 const AMBILOBE_LON = process.env.REACT_APP_AMBILOBE_LON
 
-// TODO - all hig res, open license images
-// TODO - add additional atmo conditions
 const IMAGE_MAP = {
   day: {
     clear: [ 'day-sky-blue1.jpeg', 'day-sky-clouds4.jpeg' ],
@@ -54,43 +52,134 @@ const IMAGE_MAP_MOBILE = { // TODO - set up device-dependent mobile image mappin
   }
 }
 
+const buildOWMIconUrl = key => 'http://openweathermap.org/img/wn/' + key + '@2x.png'
+
+const formatDailyForecast = ({ daily, sunset, sunrise, timeZone }) => {
+  let formattedDaily = []
+  daily.map(d => {
+    formattedDaily.push({
+      timestampRequested: d.dt,
+      type: 'daily',
+      cloudiness: d.clouds,
+      dewPoint: d.dew_point,
+      feelsLikeObj: d.feels_like,
+      humidity: d.humidity,
+      iconUrl: buildOWMIconUrl(d.weather[ 0 ].icon),
+      name: d.weather[ 0 ].main,
+      precipProb: d.pop, // NEW
+      pressure: d.pressure,
+      rain: d.rain, // NEW
+      sunset: d.sunset, // NEW
+      sunrise: d.sunrise,  // NEW
+      temperatureObj: d.temp,
+      temperatureMin: d.temp.min,
+      uvi: d.uvi,
+      visibility: d.visibility,
+      windDegrees: d.wind_deg,
+      windGust: d.wind_gust,
+      windSpeed: d.wind_speed,
+    })
+  })
+
+  return formattedDaily
+}
+
+const formatHourlyForecast = ({ hourly, sunset, sunrise, timeZone }) => {
+  let formattedHourly = []
+
+  hourly.map(h => {
+    let pointInTimeMs = moment(h.dt * 1000).tz(timeZone).unix() * 1000
+    let timeOfDay = calculateTimeOfDay({
+      pointInTimeMs: pointInTimeMs,
+      sunriseMs: sunrise, // TODO - these should change by the day within 24 hour forecast
+      sunsetMs: sunset // TODO - these should change by the day within 24 hour forecast
+    })
+    formattedHourly.push({
+      timestampTopOfHour: pointInTimeMs,
+      type: 'hourly',
+      cloudiness: h.clouds,
+      dewPoint: h.dew_point,
+      feelsLike: h.feels_like,
+      humidity: h.humidity,
+      iconUrl: buildOWMIconUrl(h.weather[ 0 ].icon),
+      image: mapImageByDesc({ desc: h.weather[ 0 ].main, phase: timeOfDay }),
+      name: h.weather[ 0 ].main,
+      pressure: h.pressure,
+      temperature: h.temp,
+      timeOfDay: timeOfDay,
+      uvi: h.uvi,
+      visibility: h.visibility,
+      windDegrees: h.wind_deg,
+      windGust: h.wind_gust,
+      windSpeed: h.wind_speed
+
+    })
+  })
+  return formattedHourly
+}
+
+const formatCurrentForecast = (data) => {
+  let formattedCurrent = []
+  let sunrise = data.current.sunrise * 1000
+  let sunset = data.current.sunset * 1000
+  let timeOfDay = calculateTimeOfDay({
+    pointInTimeMs: moment().tz(data.timezone).unix() * 1000,
+    sunriseMs: sunrise,
+    sunsetMs: sunset
+  })
+  let timeZone = data.timezone
+  if (data.current) {
+    formattedCurrent = {
+      cloudiness: data.current.clouds, // % // TODO - map to images?
+      dewPoint: data.current.dewPoint, // convert
+      feelsLike: data.current.feels_like, // convert
+      forecast: {
+        hourly: [],
+        daily: []
+      },
+      iconUrl: buildOWMIconUrl(data.current.weather[ 0 ].icon), // TODO - replace these icons
+      image: mapImageByDesc({ desc: data.current.weather[ 0 ].main, phase: timeOfDay }),
+      lat: data.lat,
+      lon: data.lon,
+      sunrise: sunrise,
+      sunset: sunset,
+      timeOfDay: timeOfDay,
+      timestampSunrise: moment(sunrise).tz(data.timezone).unix(),
+      timestampSunset: moment(sunset).tz(data.timezone).unix(),
+      timeZone: timeZone,
+      timeZoneOffset: data.timezone_offset,
+      visibility: data.current.visibility, // convert m -> mi
+      // brightness: '',
+      humidity: data.current.humidity,
+      // icon: 'CLEAR_DAY',
+      // lux: 1580.65,
+      name: data.current.weather[ 0 ].main,
+      pressure: Math.round(100 * data.current.pressure / 1013.25) / 100, //convert hPa -> ATMO
+      temperature: data.current.temp,
+      uvi: data.current.uvi,
+      windSpeed: data.current.wind_speed,
+      windDegrees: data.current.wind_deg,
+      windGust: data.current.wind_gust,
+      // "weather": [ { "id": 800, "main": "Clear", "description": "clear sky", "icon": "01d" } ]
+    }
+  }
+
+  return [ formattedCurrent, sunset, sunrise, timeZone ]
+}
+
 export const formatWeatherData = (body) => {
   let formattedData
 
   try {
     let response = body.data
+    let sunrise
+    let sunset
+    let timeZone
 
-    let timeOfDay = getTimeOfDay({ now: moment().tz(response.timezone).unix(), sunrise: response.current.sunrise, sunset: response.current.sunset })
+    [ formattedData, sunset, sunrise, timeZone ] = formatCurrentForecast(response)
 
-    // TODO - add hourly history/forecast?
-    // TODO - add other measurements below to UI
-    formattedData = {
-      cloudiness: response.current.clouds, // % // TODO - map to images?
-      dewPoint: response.current.dewPoint, // convert
-      feelsLike: response.current.feels_like, // convert
-      iconUrl: 'http://openweathermap.org/img/wn/' + response.current.weather[ 0 ].icon + '@2x.png', // TODO - replace these icons
-      image: mapImageByDesc({ desc: response.current.weather[ 0 ].main, phase: timeOfDay }),
-      lat: response.lat,
-      lon: response.lon,
-      sunrise: response.current.sunrise,
-      sunset: response.current.sunset,
-      timeOfDay: timeOfDay,
-      timeZone: response.timezone,
-      timeZoneOffset: response.timezone_offset,
-      visibility: response.current.visibility, // convert m -> mi
-      // brightness: '',
-      humidity: response.current.humidity,
-      // icon: 'CLEAR_DAY',
-      // lux: 1580.65,
-      name: response.current.weather[ 0 ].main,
-      pressure: Math.round(100 * response.current.pressure / 1013.25) / 100, //convert hPa -> ATMO
-      temperature: response.current.temp,
-      uvi: response.current.uvi,
-      windSpeed: response.current.wind_speed,
-      windDegrees: response.current.wind_deg,
-      windGust: response.current.wind_gust,
-      // "weather": [ { "id": 800, "main": "Clear", "description": "clear sky", "icon": "01d" } ]
-    }
+    if (response.hourly) formattedData.forecast.hourly = formatHourlyForecast({ hourly: response.hourly, sunset, sunrise, timeZone })
+    if (response.daily) formattedData.forecast.daily = formatDailyForecast({ daily: response.daily, sunset, sunrise, timeZone })
   } catch (e) {
     console.log({ e })
   }
@@ -106,7 +195,8 @@ export const generateUrl = (locale) => {
   return LOCAL_PROXY.replace('{LAT}', lat).replace('{LON}', lon)
 }
 
-export const getTimeOfDay = ({ now, sunrise, sunset }) => {
+export const calculateTimeOfDay = ({ pointInTimeMs, sunriseMs, sunsetMs, useMilliseconds }) => {
+  let now = pointInTimeMs, sunrise = sunriseMs, sunset = sunsetMs
   let phase
   let threshold = 2000
   if (now > sunset + threshold) phase = 'night'

@@ -22,7 +22,7 @@ const App = (props) => {
   const [ style, setStyle ] = useState({})
 
   useEffect(() => {
-    let styleContent = { ...defaultImageStyle, 'background-image': 'url(/images/' + image + ')' }
+    let styleContent = { ...defaultImageStyle, backgroundImage: 'url(/images/' + image + ')' }
     if (image) setStyle(styleContent)
   }, [ image ])
 

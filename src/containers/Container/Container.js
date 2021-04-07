@@ -18,20 +18,20 @@ const Container = (props) => {
   }))
   const classes = useStyles()
   return (
-    <Grid container direction="row" justify="space-evenly" alignItems="stretch" className={[ 'padded' ]}>
-      <Grid item sm={6} xs={12} className={[ 'highlight', 'padded' ]}>
+    <Grid container direction="row" justify="space-evenly" alignItems="stretch" className={[ JSON.stringify('padded') ]}>
+      <Grid item sm={6} xs={12} className={[ JSON.stringify('highlight', 'padded') ]}>
         <Conditions />
       </Grid>
       { IS_MOBILE &&
-        <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
+        <Grid item sm={6} xs={6} className={[ JSON.stringify('highlight', 'padded') ]}>
           <Temperature />
-          <Trend color={"orange"} />
+          <Trend color={"orange"} metric={"temperature"} />
         </Grid>
       }
       { IS_MOBILE &&
-        <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
+        <Grid item sm={6} xs={6} className={[ JSON.stringify('highlight', 'padded') ]}>
           <Humidity />
-          <Trend color={"lightblue"} />
+          <Trend color={"lightblue"} metric={"humidity"} />
         </Grid>
       }
       <Grid item sm={6} xs={12}>

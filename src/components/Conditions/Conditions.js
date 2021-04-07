@@ -12,7 +12,7 @@ import Temperature from '../Temperature/Temperature';
 import '../../containers/App/App.css'
 import Trend from '../Trend/Trend';
 import { getIsMobile } from '../../store/app/lenses'
-import { getCompletedRequest, getIconUrl } from '../../store/weather/lenses'
+import { getCompletedRequest, getIconUrl, getTimeOfDay } from '../../store/weather/lenses'
 import { getWeatherAtLocale } from '../../store/weather/actions'
 
 const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
@@ -27,16 +27,16 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const Conditions = (props) => {
-  const { completedRequest, getWeatherAtLocaleAction, iconUrl, IS_MOBILE } = props
 
-  // TODO - modify weather conditions, images, time of day from ticking timer
+
+const Conditions = (props) => {
+  const { completedRequest, getWeatherAtLocaleAction, iconUrl, IS_MOBILE, timeOfDay } = props
 
   useEffect(() => {
-    getWeatherAtLocaleAction(DEFAULT_CITY)
+    getWeatherAtLocaleAction(DEFAULT_CITY) // TODO - make selectable
     // getWeatherAtLocaleAction('ambilobe')
+    // }, [timeOfDay])
   }, [])
-
 
   const [ size, setSize ] = useState(120)
   const [ color, setColor ] = useState('lightblue')
@@ -75,12 +75,12 @@ const Conditions = (props) => {
             <Grid item sm={2} xs={0}></Grid>
             <Grid item sm={4} xs={4} >
               <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
-                <Trend color={"orange"} />
+                <Trend color={"orange"} metric={"temperature"} />
               </Grid>
             </Grid>
             <Grid item sm={4} xs={4} >
               <Grid container direction='column' justify='space-around' spacing={0} className={classes.noTop}>
-                <Trend color={"lightblue"} />
+                <Trend color={"lightblue"} metric={"humidity"} />
               </Grid>
             </Grid>
             <Grid item sm={2} xs={0}></Grid>
@@ -94,7 +94,8 @@ const Conditions = (props) => {
 const mapStateToProps = (state) => ({
   completedRequest: getCompletedRequest(state.weather),
   iconUrl: getIconUrl(state.weather),
-  IS_MOBILE: getIsMobile(state.app)
+  IS_MOBILE: getIsMobile(state.app),
+  timeOfDay: getTimeOfDay(state.weather)
 })
 
 const mapDispatchToProps = {

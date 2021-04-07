@@ -19,21 +19,21 @@ const Intensity = (props) => {
   return (
     <>
       <Grid container direction="row" justify="space-evenly" alignItems="stretch">
-        <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
+        <Grid item sm={6} xs={6} className={[JSON.stringify( 'highlight', 'padded' )]}>
           <div className={classes.text}>{uvi}</div>
           UVI
         </Grid>
-        <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
+        <Grid item sm={6} xs={6} className={[JSON.stringify( 'highlight', 'padded' )]}>
           <div className={classes.text}>{brightness}</div>
           INTENSITY
         </Grid>
       </Grid>
       <Grid container direction="row" justify="space-evenly" alignItems="stretch">
-        <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
+        <Grid item sm={6} xs={6} className={[JSON.stringify( 'highlight', 'padded' )]}>
           <div className={classes.text}>{pressure}</div>
           ATM
         </Grid>
-        <Grid item sm={6} xs={6} className={[ 'highlight', 'padded' ]}>
+        <Grid item sm={6} xs={6} className={[JSON.stringify( 'highlight', 'padded' )]}>
           <div className={classes.text}>{lux}</div>
           LUX
         </Grid>

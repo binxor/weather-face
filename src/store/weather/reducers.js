@@ -13,8 +13,9 @@ const initialState = { //TODO - populate from source
   temperature: 0,
   uvi: 0,
   completedRequest: false,
-  useMockData: USE_MOCK_DATA
+  useMockData: USE_MOCK_DATA,
   // TODO - initialize additional metrics
+  timeOfDay: '',
 }
 
 const reducer = (state = initialState, action) => {
