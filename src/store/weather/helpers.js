@@ -8,49 +8,90 @@ const LOCAL_PROXY = process.env.REACT_APP_LOCAL_PROXY
 const AMBILOBE_LAT = process.env.REACT_APP_AMBILOBE_LAT
 const AMBILOBE_LON = process.env.REACT_APP_AMBILOBE_LON
 
+// TODO - add additional atmo conditions
 const IMAGE_MAP = {
-  day: {
-    clear: [ 'day-sky-blue1.jpeg', 'day-sky-clouds4.jpeg' ],
-    cloudy: [ 'day-sky-clouds3.jpeg' ],
-    fog: 'fog1.jpeg',
-    storm: [ 'thunderstorm1.jpeg', 'thunderstorm3.jpeg' ],
+  dawn: {
+    clear: [ 'dawn-clear-2' ],
+    cloudy: [ 'dawn-clear-1' ],
+    default: [ 'unique-day-red-haze' ],
+    // fog: [],
+    storm: []
   },
-  transition: {
-    suriseOrSunset: [ 'sunrise-clouds1.jpeg', 'sunset-clouds2.jpeg' ],
-    twilight: [ 'twilight.jpeg' ]
+  day: {
+    clear: [ 'day-clear-1', 'day-clear-2', 'day-clear-3', 'day-clear-4' ],
+    cloudy: [ 'day-cloudy-10pc', 'day-cloudy-30pc', 'day-cloudy-40pc',
+      'day-cloudy-50pc', 'day-cloudy-60pc', 'day-cloudy-70pc',
+      'day-cloudy-80pc', 'day-cloudy-90pc', 'day-cloudy-100pc' ],
+    default: [ 'unique-day-glare' ], // TODO
+    fog: [ 'day-fog' ],
+    storm: [ 'day-dark-clouds-1', 'day-dark-clouds-2' ],
+  },
+  default: [ 'default-1', 'default-2' ],
+  night: {
+    clear: [ 'night-clear-1' ],
+    cloudy: [ 'night-cloudy-1' ],
+    default: [ 'night-moonless', 'unique-red-moon' ],
+    // fog: [],
+    storm: [ 'night-thunderstorm-1', 'night-thunderstorm-2' ]
   },
   sunrise: {
-    clear: [ 'sunrise-clouds1.jpeg', 'sunset-clouds2.jpeg' ],
-    cloudy: [ 'twilight.jpeg' ]
+    clear: [],
+    cloudy: [ 'sunrise-clouds-1' ],
+    default: [], // TODO
+    // fog: [],
+    storm: []
   },
   sunset: {
-    clear: [ 'sunrise-clouds1.jpeg', 'sunset-clouds2.jpeg' ],
-    cloudy: [ 'twilight.jpeg' ]
+    clear: [],
+    cloudy: [ 'sunset-clouds-1', 'sunset-clouds-2' ],
+    default: [], // TODO
+    // fog: [],
+    storm: [ 'sunset-thunderstorm-1' ]
   },
-  night: {
-    clear: 'night-sky-moonlight.jpeg',
-    cloudy: 'night-sky-clouds2.jpeg',
-    moonless: 'night-sky-stars2.jpeg',
-  }
+  twilight: {
+    clear: [ 'twilight-clear-1' ],
+    cloudy: [],
+    default: [ 'twilight-mist' ], // TODO
+    // fog: [],
+    storm: []
+  },
 }
 
-const IMAGE_MAP_MOBILE = { // TODO - set up device-dependent mobile image mapping
-  day: {
-    clear: [],
-    cloudy: [ 'day-sky-clouds1.jpeg', 'day-sky-clouds2.jpeg' ],
-    fog: [],
-    storm: [ 'rain-sky1.jpeg', 'thunderstorm2.jpeg' ],
-  },
-  transition: {
-    surise: 'sunrise-clouds2.jpeg',
-    sunset: 'sunset-clouds1.jpeg',
-    twilight: 'twilight1.jpeg'
-  },
-  night: {
-    clear: 'night-sky-stars1.jpeg',
-    cloudy: 'night-sky-clouds1.jpeg',
-  }
+export const CONDITION_DISPLAY_NAME_MAP = {
+  // "Ash":          '',
+  "Clear": 'Clear',
+  "Clouds": 'Cloudy',
+  "Drizzle": 'Drizzle',
+  // "Dust":         '',
+  // "Haze":         '',
+  // "Main":         '',
+  // "Mist":         '',
+  "Rain": 'Rainy',
+  // "Smoke":        '',
+  // "Snow":         '',
+  // "Squall":       '',
+  "Thunderstorm": 'Thunderstorm',
+  // "Tornado":      ''
 }
+
+export const CONDITION_MAP = {
+  // "Ash":          '',
+  "Clear": 'clear',
+  "Clouds": 'cloudy',
+  "Drizzle": 'storm',
+  // "Dust":         '',
+  // "Haze":         '',
+  // "Main":         '',
+  // "Mist":         '',
+  "Rain": 'storm',
+  // "Smoke":        '',
+  // "Snow":         '',
+  // "Squall":       '',
+  "Thunderstorm": 'storm',
+  // "Tornado":      ''
+}
+
+export const KNOWN_PHASES = [ 'dawn', 'day', 'night', 'sunrise', 'sunset', 'twilight' ]
 
 const buildOWMIconUrl = key => 'http://openweathermap.org/img/wn/' + key + '@2x.png'
 
@@ -62,22 +103,25 @@ const formatDailyForecast = ({ daily, sunset, sunrise, timeZone }) => {
       type: 'daily',
       cloudiness: d.clouds,
       dewPoint: d.dew_point,
-      feelsLikeObj: d.feels_like,
+      displayName: generateDisplayName(d.weather[ 0 ].main),
+      feelsLikeObj: d.feels_like, // TODO: handle phase obj?
       humidity: d.humidity,
       iconUrl: buildOWMIconUrl(d.weather[ 0 ].icon),
+      // image: ... // TODO
       name: d.weather[ 0 ].main,
       precipProb: d.pop, // NEW
       pressure: d.pressure,
       rain: d.rain, // NEW
       sunset: d.sunset, // NEW
       sunrise: d.sunrise,  // NEW
-      temperatureObj: d.temp,
+      temperatureObj: d.temp, // TODO: handle (larger) phase obj?
       temperatureMin: d.temp.min,
       uvi: d.uvi,
       visibility: d.visibility,
       windDegrees: d.wind_deg,
       windGust: d.wind_gust,
       windSpeed: d.wind_speed,
+     
     })
   })
 
@@ -89,16 +133,23 @@ const formatHourlyForecast = ({ hourly, sunset, sunrise, timeZone }) => {
 
   hourly.map(h => {
     let pointInTimeMs = moment(h.dt * 1000).tz(timeZone).unix() * 1000
-    let timeOfDay = calculateTimeOfDay({
+    let timeOfDay = calculateForcastedTimeOfDay({
       pointInTimeMs: pointInTimeMs,
       sunriseMs: sunrise, // TODO - these should change by the day within 24 hour forecast
       sunsetMs: sunset // TODO - these should change by the day within 24 hour forecast
     })
+    let ts_tz = moment(moment().tz(timeZone).unix() * 1000)
+    let ts_rise = moment(sunrise).tz(timeZone)
+    let ts_set = moment(sunset).tz(timeZone)
+    let minutesTilSunrise = ts_rise.diff(ts_tz, 'minutes')
+    let minutesTilSunset = ts_set.diff(ts_tz, 'minutes')
+    
     formattedHourly.push({
       timestampTopOfHour: pointInTimeMs,
       type: 'hourly',
       cloudiness: h.clouds,
       dewPoint: h.dew_point,
+      displayName: generateDisplayName(h.weather[ 0 ].main),
       feelsLike: h.feels_like,
       humidity: h.humidity,
       iconUrl: buildOWMIconUrl(h.weather[ 0 ].icon),
@@ -122,7 +173,7 @@ const formatCurrentForecast = (data) => {
   let formattedCurrent = []
   let sunrise = data.current.sunrise * 1000
   let sunset = data.current.sunset * 1000
-  let timeOfDay = calculateTimeOfDay({
+  let timeOfDay = calculateForcastedTimeOfDay({
     pointInTimeMs: moment().tz(data.timezone).unix() * 1000,
     sunriseMs: sunrise,
     sunsetMs: sunset
@@ -132,6 +183,7 @@ const formatCurrentForecast = (data) => {
     formattedCurrent = {
       cloudiness: data.current.clouds, // % // TODO - map to images?
       dewPoint: data.current.dewPoint, // convert
+      displayName: generateDisplayName(data.current.weather[ 0 ].main),
       feelsLike: data.current.feels_like, // convert
       forecast: {
         hourly: [],
@@ -187,6 +239,11 @@ export const formatWeatherData = (body) => {
   return formattedData
 }
 
+export const generateDisplayName = (name) => {
+  let displayName = CONDITION_DISPLAY_NAME_MAP[name] || ' '
+  return displayName
+}
+
 export const generateUrl = (locale) => {
   let lat, lon
   if (locale == 'ambilobe') { lat = AMBILOBE_LAT; lon = AMBILOBE_LON }
@@ -195,10 +252,25 @@ export const generateUrl = (locale) => {
   return LOCAL_PROXY.replace('{LAT}', lat).replace('{LON}', lon)
 }
 
-export const calculateTimeOfDay = ({ pointInTimeMs, sunriseMs, sunsetMs, useMilliseconds }) => {
+export const calculatePhase = ({ toSunset, toSunrise }) => {
+  let phase
+  let x = 1
+  if (toSunrise > 40 * x) phase = 'night'
+  else if (toSunrise > 20 * x) phase = 'dawn'
+  else if (toSunrise > -20 * x) phase = 'sunrise'
+  else if (toSunset > 40 * x) phase = 'day'
+  else if (toSunset > 20 * x) phase = 'sunset'
+  else if (toSunset > -20 * x) phase = 'twilight'
+  else if (toSunset > -40 * x) phase = 'night'
+  else phase = 'default'
+
+  return phase
+}
+
+export const calculateForcastedTimeOfDay = ({ pointInTimeMs, sunriseMs, sunsetMs, useMilliseconds }) => {
   let now = pointInTimeMs, sunrise = sunriseMs, sunset = sunsetMs
   let phase
-  let threshold = 2000
+  let threshold = 20000
   if (now > sunset + threshold) phase = 'night'
   else if (now >= sunset - threshold) phase = 'sunset'
   else if (now > sunrise + threshold) phase = 'day'
@@ -235,62 +307,38 @@ export const mapIcon = (lux) => {
   return icon
 }
 
-export const mapImage = (lux) => {
+const mapConditions = (desc) => {
+  let useCondition = ''
+  if (!Object.keys(CONDITION_MAP).includes(desc)) useCondition = 'default'
+  else {
+    useCondition = CONDITION_MAP[ desc ]
+  }
+  return useCondition
+}
+
+const mapPhase = (phase) => {
+  let usePhase = ''
+  if (!KNOWN_PHASES.includes(phase)) usePhase = 'default'
+  else {
+    usePhase = phase
+  }
+  return usePhase
+}
+
+export const mapImagePhaseConditions = ({ desc, phase }) => {
   let image = ''
-  if (lux > 32000) image = selectRandomImage(IMAGE_MAP[ 'day' ][ 'clear' ])
-  else if (lux > 10000) image = selectRandomImage(IMAGE_MAP[ 'day' ][ 'cloudy' ])
-  else if (lux > 500) image = selectRandomImage(IMAGE_MAP[ 'day' ][ 'cloudy' ])
-  else if (lux > 400) image = selectRandomImage(IMAGE_MAP[ 'transition' ][ 'suriseOrSunset' ])
-  else if (lux > 300) image = selectRandomImage(IMAGE_MAP[ 'transition' ][ 'twilight' ])
-  else if (lux > 3) image = selectRandomImage(IMAGE_MAP[ 'transition' ][ 'twilight' ])
-  else if (lux > 0.05) image = selectRandomImage(IMAGE_MAP[ 'night' ][ 'clear' ])
-  else if (lux > 0.02) image = selectRandomImage(IMAGE_MAP[ 'night' ][ 'cloudy' ])
-  else image = selectRandomImage(IMAGE_MAP[ 'night' ][ 'moonless' ])
-  return './other/' + image
+
+  let foundPhase = mapPhase(phase)
+  let foundCond = mapConditions(desc)
+
+  let imageArray = IMAGE_MAP[ foundPhase ][ foundCond ] ? IMAGE_MAP[ foundPhase ][ foundCond ] : IMAGE_MAP[ 'default' ]
+  image = selectRandomImage(imageArray)
+  return './other/' + image + '.jpg'
 }
 
 export const mapImageByDesc = ({ desc, phase }) => {
-  let image = ''
-  switch (desc) {
-    case "Clear":
-      image = selectRandomImage(IMAGE_MAP[ phase ][ 'clear' ])
-      break
-    case "Clouds":
-      image = selectRandomImage(IMAGE_MAP[ phase ][ 'cloudy' ])
-      break
-    case "Drizzle":
-      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
-      break
-    case "Rain":
-      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
-      break
-    case "Snow":
-      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
-      break
-    case "Thunderstorm":
-      image = selectRandomImage(IMAGE_MAP[ phase ][ 'storm' ])
-      break
-    default:
-      image = selectRandomImage(IMAGE_MAP[ phase ][ 'moonless' ])
-      break;
-  }
-  // TODO  - map new atmo images to OWM descriptions below
-  /*
-
-  ID	Main	Description	Icon
-  701	Mist	mist	 50d
-  711	Smoke	Smoke	 50d
-  721	Haze	Haze	 50d
-  731	Dust	sand/ dust whirls	 50d
-  741	Fog	fog	 50d
-  751	Sand	sand	 50d
-  761	Dust	dust	 50d
-  762	Ash	volcanic ash	 50d
-  771	Squall	squalls	 50d
-  781	Tornado	tornado	 50d
-
-  */
-  return './other/' + image
+  let image = mapImagePhaseConditions({ desc, phase })
+  return image
 }
 
 const selectRandomImage = (choices) => {

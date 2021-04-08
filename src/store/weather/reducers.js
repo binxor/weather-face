@@ -20,6 +20,12 @@ const initialState = { //TODO - populate from source
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case types.CHANGE_PHASE:
+      return {
+        ...state,
+        timeOfDay: action.payload.timeOfDay,
+        image: action.payload.image,
+      }
     case types.WEATHER_REQUEST:
       return {
         ...state,

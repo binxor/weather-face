@@ -10,26 +10,13 @@ const DEFAULT_LAT = process.env.REACT_APP_DEFAULT_LAT
 const DEFAULT_LON = process.env.REACT_APP_DEFAULT_LON
 
 
-export const getWeather = () => (dispatch) => {
-  let response = {
-    brightness: '-',
-    humidity: 29.77,
-    icon: 'CLEAR_DAY',
-    lux: 1580.65,
-    name: 'Sunny',
-    pressure: 0.99,
-    temperature: 83.41,
-    uvi: 0.05
-  }
-
-  response.brightness = helpers.mapBrightness(response.lux)
-  response.name = 'MOCK ' + helpers.mapBrightness(response.lux)
-  response.icon = helpers.mapIcon(response.lux)
-  response.image = helpers.mapImage(response.lux)
-
+export const changePhase = (phase) => (dispatch) => {
   dispatch({
-    type: types.WEATHER_REQUEST,
-    payload: response
+    type: types.CHANGE_PHASE,
+    payload: {
+      timeOfDay: phase,
+      image: helpers.mapImageByDesc({desc: 'Clear', phase})
+    }
   })
 }
 

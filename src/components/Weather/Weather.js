@@ -3,14 +3,14 @@ import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
 import WeatherIcon from '../WeatherIcon/WeatherIcon'
-import { getIcon, getIconUrl, getName, getTimeOfDay } from '../../store/weather/lenses'
+import { getDisplayName, getIcon, getIconUrl, getName, getTimeOfDay } from '../../store/weather/lenses'
 
 const useStyles = makeStyles(theme => ({
 }))
 
 
 const Weather = (props) => {
-  const { color, name, size, icon, iconUrl, timeOfDay } = props
+  const { color, displayName, name, size, icon, iconUrl, timeOfDay } = props
 
   const [ img, setImg ] = useState(icon)
 
@@ -21,12 +21,13 @@ const Weather = (props) => {
       {/* <WeatherIcon key={icon} icon={icon} size={size} color={color} animate={true} /> */}
       <img src={iconUrl} size={size} />
       <br/>
-      {name} {timeOfDay}
+      {displayName} {!['day', 'night'].includes(timeOfDay) ? timeOfDay : ''}
     </>
   )
 }
 
 const mapStateToProps = (state) => ({
+  displayName: getDisplayName(state.weather),
   name: getName(state.weather),
   icon: getIcon(state.weather),
   iconUrl: getIconUrl(state.weather),

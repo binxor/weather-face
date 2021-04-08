@@ -6,6 +6,9 @@ export const getBrightness = (state) => R.view(brightnessL(), state)
 export const completedRequestL = () => R.lensProp('completedRequest')
 export const getCompletedRequest = (state) => R.view(completedRequestL(), state)
 
+export const displayNameL = () => R.lensProp('displayName')
+export const getDisplayName = (state) => R.view(displayNameL(), state)
+
 export const forecastL = () => R.lensProp('forecast')
 export const getForecast = (state) => R.view(forecastL(), state)
 

@@ -4,7 +4,7 @@ import moment from 'moment-timezone'
 
 import { makeStyles } from '@material-ui/core/styles'
 import { getCompletedRequest, getLocale, getSunrise, getSunset, getTimeOfDay, getTimeZone, getTimeZoneOffset } from '../../store/weather/lenses'
-import { calculateTimeOfDay } from '../../store/weather/helpers'
+import { calculatePhase } from '../../store/weather/helpers'
 import { changePhase } from '../../store/weather/actions'
 
 const useStyles = makeStyles(theme => ({
@@ -32,19 +32,18 @@ const Clock = (props) => {
   const [ date, setDate ] = useState(moment().format('ddd, MMM DD'))
   const [ timestamp, setTimestamp ] = useState(moment().unix() * 1000)
   const [ city, setCity ] = useState('_')
-  const [ timeOfDayClock, setTimeOfDayClock ] = useState(timeOfDay)
 
-
-  useEffect(() => { 
-    if (sunrise > 0 && sunset > 0 && timestamp > 0 && !!timeZoneOffset) {
-      let phaseTimer = setInterval(() => {
-        let now = moment().tz(timeZone).unix() * 1000
-        setTimeOfDayClock(calculateTimeOfDay({ pointInTimeMs: now, sunsetMs: sunset, sunriseMs: sunrise, useMilliseconds: true })) // TODO - restore
-      }, 60000) 
-      return () => clearInterval(phaseTimer)
-    } else {
+  useEffect(() => {
+    if (timestamp && sunrise && sunset) {
+      let ts_tz =  moment(moment().tz(timeZone).unix() * 1000)
+      let ts_rise = moment(sunrise).tz(timeZone)
+      let ts_set = moment(sunset).tz(timeZone)
+      let minutesTilSunrise = ts_rise.diff(ts_tz, 'minutes')
+      let minutesTilSunset = ts_set.diff(ts_tz, 'minutes')
+      let currentPhase = (calculatePhase({toSunrise: minutesTilSunrise, toSunset: minutesTilSunset}))
+      if (timeOfDay != currentPhase) changePhaseAction(currentPhase)
     }
-  }, [ sunrise, sunset, timestamp, timeZoneOffset ])
+  }, [timestamp, sunrise, sunset, timeZone, timeZoneOffset])
 
   useEffect(() => {
     if (completedRequest === true) {
@@ -79,6 +78,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
+  changePhaseAction: changePhase
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Clock)
