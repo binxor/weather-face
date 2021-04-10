@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import moment from 'moment-timezone'
 
 const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
@@ -15,10 +16,10 @@ const IMAGE_MAP = {
     cloudy: [ 'dawn-clear-1' ],
     default: [ 'unique-day-red-haze' ],
     // fog: [],
-    storm: []
+    storm: [ 'unique-red-moon' ], // TODO - replace
   },
   day: {
-    clear: [ 'day-clear-1', 'day-clear-2', 'day-clear-3', 'day-clear-4' ],
+    clear: [ 'day-clear-1', 'day-clear-3', 'day-clear-4' ],
     cloudy: [ 'day-cloudy-10pc', 'day-cloudy-30pc', 'day-cloudy-40pc',
       'day-cloudy-50pc', 'day-cloudy-60pc', 'day-cloudy-70pc',
       'day-cloudy-80pc', 'day-cloudy-90pc', 'day-cloudy-100pc' ],
@@ -35,25 +36,25 @@ const IMAGE_MAP = {
     storm: [ 'night-thunderstorm-1', 'night-thunderstorm-2' ]
   },
   sunrise: {
-    clear: [],
+    clear: [ 'unique-red-moon' ], // TODO - replace
     cloudy: [ 'sunrise-clouds-1' ],
     default: [], // TODO
     // fog: [],
-    storm: []
+    storm: [ 'unique-red-moon' ], // TODO - replace
   },
   sunset: {
-    clear: [],
+    clear: [ 'unique-red-moon' ], // TODO - replace
     cloudy: [ 'sunset-clouds-1', 'sunset-clouds-2' ],
-    default: [], // TODO
+    default: [ 'unique-red-moon' ], // TODO - replace
     // fog: [],
     storm: [ 'sunset-thunderstorm-1' ]
   },
   twilight: {
     clear: [ 'twilight-clear-1' ],
-    cloudy: [],
+    cloudy: [ 'unique-red-moon' ], // TODO - replace
     default: [ 'twilight-mist' ], // TODO
     // fog: [],
-    storm: []
+    storm: [ 'unique-red-moon' ], // TODO - replace
   },
 }
 
@@ -103,7 +104,7 @@ const formatDailyForecast = ({ daily, sunset, sunrise, timeZone }) => {
       type: 'daily',
       cloudiness: d.clouds,
       dewPoint: d.dew_point,
-      displayName: generateDisplayName(d.weather[ 0 ].main),
+      displayName: generateDisplayName(d.weather[ 0 ].main, d.clouds),
       feelsLikeObj: d.feels_like, // TODO: handle phase obj?
       humidity: d.humidity,
       iconUrl: buildOWMIconUrl(d.weather[ 0 ].icon),
@@ -149,7 +150,7 @@ const formatHourlyForecast = ({ hourly, sunset, sunrise, timeZone }) => {
       type: 'hourly',
       cloudiness: h.clouds,
       dewPoint: h.dew_point,
-      displayName: generateDisplayName(h.weather[ 0 ].main),
+      displayName: generateDisplayName(h.weather[ 0 ].main, h.clouds),
       feelsLike: h.feels_like,
       humidity: h.humidity,
       iconUrl: buildOWMIconUrl(h.weather[ 0 ].icon),
@@ -183,7 +184,7 @@ const formatCurrentForecast = (data) => {
     formattedCurrent = {
       cloudiness: data.current.clouds, // % // TODO - map to images?
       dewPoint: data.current.dewPoint, // convert
-      displayName: generateDisplayName(data.current.weather[ 0 ].main),
+      displayName: generateDisplayName(data.current.weather[ 0 ].main, data.current.clouds),
       feelsLike: data.current.feels_like, // convert
       forecast: {
         hourly: [],
@@ -191,6 +192,7 @@ const formatCurrentForecast = (data) => {
       },
       iconUrl: buildOWMIconUrl(data.current.weather[ 0 ].icon), // TODO - replace these icons
       image: mapImageByDesc({ desc: data.current.weather[ 0 ].main, phase: timeOfDay }),
+      indicators: generateIndicators({ data }),
       lat: data.lat,
       lon: data.lon,
       sunrise: sunrise,
@@ -219,6 +221,10 @@ const formatCurrentForecast = (data) => {
   return [ formattedCurrent, sunset, sunrise, timeZone ]
 }
 
+export const formatTimeFromUnixMs = (timestampMs) => {
+  return moment(timestampMs).format('HH:mm')
+}
+
 export const formatWeatherData = (body) => {
   let formattedData
 
@@ -239,9 +245,40 @@ export const formatWeatherData = (body) => {
   return formattedData
 }
 
-export const generateDisplayName = (name) => {
-  let displayName = CONDITION_DISPLAY_NAME_MAP[name] || ' '
-  return displayName
+export const generateDisplayName = (name, cloudiness) => {
+  let title = ''
+  let label = CONDITION_DISPLAY_NAME_MAP[ name ] || ' '
+  if (name === 'Clouds') {
+    if (cloudiness > 90) title = 'Cloudy'
+    else if (cloudiness > 70) title = 'Mostly Cloudy'
+    else if (cloudiness > 50) title = 'Partly Cloudy'
+    else if (cloudiness > 30) title = 'A Little Cloudy'
+    else if (cloudiness > 10) title = 'A Few Clouds'
+    else title = 'Not Cloudy'
+  } else {
+    title = label
+  }
+  return title
+}
+
+export const generateIndicators = ({ data }) => {
+  let temperature, humidity, hour, index
+  let { hourly, timezone } = data
+
+  if (hourly && hourly.length > 0 && timezone) {
+    let nowLocale = moment().tz(timezone).unix()
+    for (let i=0; i < hourly.length - 1; i++) {
+      let isCorrectHour = nowLocale >= hourly[i]['dt'] && nowLocale < hourly[i+1]['dt']
+      if (isCorrectHour) {
+        index = i
+        hour = moment(hourly[i]['dt']*1000).toString()
+        temperature = hourly[i+1]['temp'] - hourly[i]['temp'] > 0 ? 'up' : 'down'
+        humidity = hourly[i+1]['humidity'] - hourly[i]['humidity'] > 0 ? 'up' : 'down'
+        break
+      }
+    }
+  }
+  return { temperature, humidity, hour, index }
 }
 
 export const generateUrl = (locale) => {
@@ -261,8 +298,7 @@ export const calculatePhase = ({ toSunset, toSunrise }) => {
   else if (toSunset > 40 * x) phase = 'day'
   else if (toSunset > 20 * x) phase = 'sunset'
   else if (toSunset > -20 * x) phase = 'twilight'
-  else if (toSunset > -40 * x) phase = 'night'
-  else phase = 'default'
+  else phase = 'night'
 
   return phase
 }
@@ -333,6 +369,7 @@ export const mapImagePhaseConditions = ({ desc, phase }) => {
 
   let imageArray = IMAGE_MAP[ foundPhase ][ foundCond ] ? IMAGE_MAP[ foundPhase ][ foundCond ] : IMAGE_MAP[ 'default' ]
   image = selectRandomImage(imageArray)
+  if (!image) image = IMAGE_MAP[ 'default' ][ randomFloor(2) ]
   return './other/' + image + '.jpg'
 }
 
@@ -341,10 +378,14 @@ export const mapImageByDesc = ({ desc, phase }) => {
   return image
 }
 
+const randomFloor = (length) => {
+  return Math.floor(Math.random() * length)
+}
+
 const selectRandomImage = (choices) => {
   let randomImage = ''
   if (typeof choices === 'object') {
-    randomImage = choices[ Math.floor(Math.random() * choices.length) ]
+    randomImage = choices[ randomFloor(choices.length) ]
   }
   else {
     randomImage = choices

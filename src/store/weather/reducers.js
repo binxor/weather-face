@@ -26,6 +26,11 @@ const reducer = (state = initialState, action) => {
         timeOfDay: action.payload.timeOfDay,
         image: action.payload.image,
       }
+    case types.UPDATE_INDICATORS:
+      return {
+        ...state,
+        indicators: action.payload
+      }
     case types.WEATHER_REQUEST:
       return {
         ...state,

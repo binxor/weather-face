@@ -29,7 +29,7 @@ const Trend = (props) => {
 
   }, [color, hourlyForecasts])
 
-  const [ data, setData ] = useState([ 70, 70 ])
+  const [ data, setData ] = useState([ ])
   const [ style, setStyle ] = useState(NO_DATA_LINE_STYLE)
   const [ lineColor, setLineColor ] = useState('grey')
 

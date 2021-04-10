@@ -3,6 +3,9 @@ import * as R from 'ramda'
 export const brightnessL = () => R.lensProp('brightness')
 export const getBrightness = (state) => R.view(brightnessL(), state)
 
+export const cloudinessL = () => R.lensProp('cloudiness')
+export const getCloudiness = (state) => R.view(cloudinessL(), state)
+
 export const completedRequestL = () => R.lensProp('completedRequest')
 export const getCompletedRequest = (state) => R.view(completedRequestL(), state)
 
@@ -23,6 +26,9 @@ export const getIconUrl = (state) => R.view(iconUrlL(), state)
 
 export const imageL = () => R.lensProp('image')
 export const getImage = (state) => R.view(imageL(), state)
+
+export const indicatorsL = () => R.lensProp('indicators')
+export const getIndicators = (state) => R.view(indicatorsL(), state)
 
 export const localeL = () => R.lensProp('locale')
 export const getLocale = (state) => R.view(localeL(), state) 
@@ -57,6 +63,18 @@ export const getTimeZone = (state) => R.view(timeZoneL(), state)
 export const uviL = () => R.lensProp('uvi')
 export const getUvi = (state) => R.view(uviL(), state)
 
+export const visibilityL = () => R.lensProp('visibility')
+export const getVisibility = (state) => R.view(visibilityL(), state)
+
+export const windSpeedL = () => R.lensProp('windSpeed')
+export const getWindSpeed = (state) => R.view(windSpeedL(), state)
+
 // sublenses
 export const hourlyForecastsL = () => R.compose(forecastL(), R.lensProp('hourly'))
 export const getHourlyForecasts = (state) => R.view(hourlyForecastsL(), state)
+
+export const temperatureIndicatorL = () => R.compose(indicatorsL(), R.lensProp('temperature'))
+export const getTemperatureIndicator = (state) => R.view(temperatureIndicatorL(), state)
+
+export const humidityIndicatorL = () => R.compose(indicatorsL(), R.lensProp('humidity'))
+export const getHumidityIndicator = (state) => R.view(humidityIndicatorL(), state)

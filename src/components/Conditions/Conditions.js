@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid } from '@material-ui/core'
 
-import Clock from '../Clock/Clock'
 import Weather from '../Weather/Weather';
 import Humidity from '../Humidity/Humidity';
 import Temperature from '../Temperature/Temperature';
@@ -28,15 +27,10 @@ const useStyles = makeStyles(theme => ({
 }))
 
 
+// TODO - where to do regular interval automated API call to background-refresh data?
 
 const Conditions = (props) => {
   const { completedRequest, getWeatherAtLocaleAction, iconUrl, IS_MOBILE, timeOfDay } = props
-
-  useEffect(() => {
-    getWeatherAtLocaleAction(DEFAULT_CITY) // TODO - make selectable
-    // getWeatherAtLocaleAction('ambilobe')
-    // }, [timeOfDay])
-  }, [])
 
   const [ size, setSize ] = useState(120)
   const [ color, setColor ] = useState('lightblue')
@@ -45,10 +39,8 @@ const Conditions = (props) => {
 
   return (
     <>
+      {/* TODO - update key to force rerender @ new API responses? */}
       <Grid container direction='column' justify='space-around' spacing={0}>
-        <Grid item sm>
-          <Clock />
-        </Grid>
         <Grid item sm>
           <Weather size={size} color={color} />
           {/* <img src={iconUrl} /> */}
