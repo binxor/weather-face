@@ -31,7 +31,7 @@ export const indicatorsL = () => R.lensProp('indicators')
 export const getIndicators = (state) => R.view(indicatorsL(), state)
 
 export const localeL = () => R.lensProp('locale')
-export const getLocale = (state) => R.view(localeL(), state) 
+export const getLocale = (state) => R.view(localeL(), state)
 
 export const luxL = () => R.lensProp('lux')
 export const getLux = (state) => R.view(luxL(), state)

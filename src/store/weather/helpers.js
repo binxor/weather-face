@@ -96,7 +96,7 @@ export const KNOWN_PHASES = [ 'dawn', 'day', 'night', 'sunrise', 'sunset', 'twil
 
 const buildOWMIconUrl = key => 'http://openweathermap.org/img/wn/' + key + '@2x.png'
 
-const formatDailyForecast = ({ daily, sunset, sunrise, timeZone }) => {
+const formatResponseDailyForecast = ({ daily, sunset, sunrise, timeZone }) => {
   let formattedDaily = []
   daily.map(d => {
     formattedDaily.push({
@@ -129,7 +129,7 @@ const formatDailyForecast = ({ daily, sunset, sunrise, timeZone }) => {
   return formattedDaily
 }
 
-const formatHourlyForecast = ({ hourly, sunset, sunrise, timeZone }) => {
+const formatResponseHourlyForecast = ({ hourly, sunset, sunrise, timeZone }) => {
   let formattedHourly = []
 
   hourly.map(h => {
@@ -144,7 +144,6 @@ const formatHourlyForecast = ({ hourly, sunset, sunrise, timeZone }) => {
     let ts_set = moment(sunset).tz(timeZone)
     let minutesTilSunrise = ts_rise.diff(ts_tz, 'minutes')
     let minutesTilSunset = ts_set.diff(ts_tz, 'minutes')
-    
     formattedHourly.push({
       timestampTopOfHour: pointInTimeMs,
       type: 'hourly',
@@ -170,7 +169,7 @@ const formatHourlyForecast = ({ hourly, sunset, sunrise, timeZone }) => {
   return formattedHourly
 }
 
-const formatCurrentForecast = (data) => {
+const formatResponseCurrentForecast = (data) => {
   let formattedCurrent = []
   let sunrise = data.current.sunrise * 1000
   let sunset = data.current.sunset * 1000
@@ -225,7 +224,7 @@ export const formatTimeFromUnixMs = (timestampMs) => {
   return moment(timestampMs).format('HH:mm')
 }
 
-export const formatWeatherData = (body) => {
+export const formatResponseWeatherData = (body) => {
   let formattedData
 
   try {
@@ -234,10 +233,10 @@ export const formatWeatherData = (body) => {
     let sunset
     let timeZone
 
-    [ formattedData, sunset, sunrise, timeZone ] = formatCurrentForecast(response)
+    [ formattedData, sunset, sunrise, timeZone ] = formatResponseCurrentForecast(response)
 
-    if (response.hourly) formattedData.forecast.hourly = formatHourlyForecast({ hourly: response.hourly, sunset, sunrise, timeZone })
-    if (response.daily) formattedData.forecast.daily = formatDailyForecast({ daily: response.daily, sunset, sunrise, timeZone })
+    if (response.hourly) formattedData.forecast.hourly = formatResponseHourlyForecast({ hourly: response.hourly, sunset, sunrise, timeZone })
+    if (response.daily) formattedData.forecast.daily = formatResponseDailyForecast({ daily: response.daily, sunset, sunrise, timeZone })
   } catch (e) {
     console.log({ e })
   }

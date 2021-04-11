@@ -17,19 +17,19 @@ const Weather = (props) => {
 
   const classes = useStyles()
 
-  useEffect(()=> {
-    console.log({name, displayName})
+  useEffect(() => {
+    console.log({ name, displayName })
     if (cloudiness > 0 && name === 'Clouds') {
       setCloudPc(cloudiness)
     }
-  }, [cloudiness, name])
+  }, [ cloudiness, name ])
 
   return (
     <>
       {/* <WeatherIcon key={icon} icon={icon} size={size} color={color} animate={true} /> */}
       <img src={iconUrl} size={size} />
-      <br/>
-      {displayName} {cloudPc > 0 && <span><small>{cloudPc} %</small></span>} {!['day', 'night'].includes(timeOfDay) ? timeOfDay : ''}
+      <br />
+      {displayName} {cloudPc > 0 && <span><small>{cloudPc} %</small></span>} {![ 'day', 'night' ].includes(timeOfDay) ? timeOfDay : ''}
     </>
   )
 }

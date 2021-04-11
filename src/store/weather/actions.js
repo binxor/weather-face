@@ -43,7 +43,7 @@ export const getWeatherAtLocale = (location) => (dispatch) => {
         break
     }
 
-    const formattedData = helpers.formatWeatherData(data)
+    const formattedData = helpers.formatResponseWeatherData(data)
 
     dispatch({
       type: types.WEATHER_REQUEST_SUCCESS,
@@ -57,7 +57,7 @@ export const getWeatherAtLocale = (location) => (dispatch) => {
     return axios.get(url)
       .then((res) => {
         // TODO - acount for bad response from PROXY-WEATHER_API
-        const formattedData = helpers.formatWeatherData(res)
+        const formattedData = helpers.formatResponseWeatherData(res)
         dispatch({
           type: types.WEATHER_REQUEST_SUCCESS,
           payload: { ...formattedData, locale: location }

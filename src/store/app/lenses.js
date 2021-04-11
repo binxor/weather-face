@@ -21,4 +21,10 @@ export const getReferenceHour = (state) => R.view(referenceHourL(), state)
 export const setReferenceHour = (val, state) => R.set(referenceHourL(), val, state)
 
 export const referenceMinuteL = () => R.compose(referenceTimeL(), R.lensProp('minute'))
-export const getreferenceMinute = (state) => R.view(referenceMinuteL(), state)
+export const getReferenceMinute = (state) => R.view(referenceMinuteL(), state)
+export const setReferenceMinute = (val, state) => R.set(referenceMinuteL(), val, state)
+
+export const referenceSecondL = () => R.compose(referenceTimeL(), R.lensProp('second'))
+export const getReferenceSecond = (state) => R.view(referenceSecondL(), state)
+export const setReferenceSecond = (val, state) => R.set(referenceSecondL(), val, state)
+

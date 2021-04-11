@@ -7,7 +7,7 @@ const Time = (props) => {
   const { format, getTimeZone, timeZone, ...other } = props
 
   const [ localeTimezone, setLocaleTimezone ] = useState(timeZone)
-  const [ timeFormat, settimeFormat ] = useState(format || 'HH:mm:ss')
+  const [ timeFormat, setTimeFormat ] = useState(format || 'HH:mm:ss')
 
   useEffect(() => {
     if (timeZone) setLocaleTimezone(timeZone)

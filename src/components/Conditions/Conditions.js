@@ -26,9 +26,6 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-
-// TODO - where to do regular interval automated API call to background-refresh data?
-
 const Conditions = (props) => {
   const { completedRequest, getWeatherAtLocaleAction, iconUrl, IS_MOBILE, timeOfDay } = props
 

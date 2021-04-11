@@ -5,19 +5,19 @@ import { Grid, makeStyles } from '@material-ui/core'
 
 import '../../containers/App/App.css'
 import { getIsMobile } from '../../store/app/lenses'
-import { 
-  getBrightness, getLux, getName, 
+import {
+  getBrightness, getLux, getName,
   getPressure, getUvi, getVisibility,
-  getSunrise, getSunset, getWindSpeed, getTimeZone 
+  getSunrise, getSunset, getWindSpeed, getTimeZone
 } from '../../store/weather/lenses'
 import { formatTimeFromUnixMs } from '../../store/weather/helpers'
 
 
 const Intensity = (props) => {
-  const { 
-    brightness, IS_MOBILE, lux, name, 
+  const {
+    brightness, IS_MOBILE, lux, name,
     pressure, sunrise, sunset, uvi,
-    visibility, windSpeed 
+    visibility, windSpeed
   } = props
   const useStyles = makeStyles(theme => ({
     text: {
@@ -37,7 +37,7 @@ const Intensity = (props) => {
           SUNSET
         </Grid>
       </Grid>
-      <br/>
+      <br />
       <Grid container direction="row" justify="space-evenly" alignItems="stretch">
         <Grid item sm={6} xs={6} className={[ JSON.stringify('highlight', 'padded') ]}>
           <div className={classes.text}>{uvi}</div>
@@ -48,14 +48,14 @@ const Intensity = (props) => {
           ATM
         </Grid>
       </Grid>
-      <br/>
+      <br />
       <Grid container direction="row" justify="space-evenly" alignItems="stretch">
         <Grid item sm={6} xs={6} className={[ JSON.stringify('highlight', 'padded') ]}>
-          <div className={classes.text}>{windSpeed?windSpeed:0} </div>
+          <div className={classes.text}>{windSpeed ? windSpeed : 0} </div>
           WINDSPEED <small>(MPH)</small>
         </Grid>
         <Grid item sm={6} xs={6} className={[ JSON.stringify('highlight', 'padded') ]}>
-          <div className={classes.text}>{visibility?visibility*0.000621371:0}</div>
+          <div className={classes.text}>{visibility ? visibility * 0.000621371 : 0}</div>
           VISIBILITY <small>(MILES)</small>
         </Grid>
       </Grid>

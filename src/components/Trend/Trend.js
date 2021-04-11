@@ -12,7 +12,6 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-// TODO - integrate trends
 const Trend = (props) => {
   const { color, forecast, hourlyForecasts, metric } = props
 
@@ -27,9 +26,9 @@ const Trend = (props) => {
       setLineColor(color)
     }
 
-  }, [color, hourlyForecasts])
+  }, [ color, hourlyForecasts ])
 
-  const [ data, setData ] = useState([ ])
+  const [ data, setData ] = useState([])
   const [ style, setStyle ] = useState(NO_DATA_LINE_STYLE)
   const [ lineColor, setLineColor ] = useState('grey')
 

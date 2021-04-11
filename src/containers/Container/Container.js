@@ -11,17 +11,17 @@ import '../App/App.css'
 import Intensity from '../../components/Intensity/Intensity'
 import Trend from '../../components/Trend/Trend'
 import { getWeatherAtLocale } from '../../store/weather/actions'
+import { updateRefDay, updateRefHour, updateRefMinute } from '../../store/app/actions'
 import { getReferenceDay, getReferenceHour } from '../../store/app/lenses'
 import Time from '../../components/Time/Time'
 import Locale from '../../components/Locale/Locale'
 
 const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
 
-
 const Container = (props) => {
   const {
     getWeatherAtLocaleAction, IS_MOBILE,
-    referenceDay, referenceHour
+    referenceDay, referenceHour, updateRefDayAction, updateRefHourAction, updateRefMinuteAction
   } = props
   const useStyles = (() => makeStyles({}))
 
@@ -38,22 +38,23 @@ const Container = (props) => {
     }
   }, [ referenceHour ])
 
-  // TODO - sunrise/sunset/etc transition logic here or in parent?
-
   const classes = useStyles()
   const formatClock = 'HH:mm'
+  const formatHour = 'HH'
   const formatDate = 'ddd, MMM DD'
   const styleClock = { font: 'consolas', fontSize: '3.8rem', marginTop: '0%' }
   const styleDate = { fontSize: '1.8rem' }
-  const styleLocale = { }
+  const styleHour = { display: 'none' }
+  const styleLocale = {}
 
   return (
     <Grid container direction="row" justify="space-evenly" alignItems="stretch" className={'padded'}>
       <Grid item sm={6} xs={12} className={[ JSON.stringify('highlight', 'padded') ]}>
-        <Time format={formatDate} style={styleDate} />
+        <Time format={formatDate} style={styleDate} onChange={updateRefDayAction} interval={60 * 60 * 1000} />
         <br />
-        <Time format={formatClock} style={styleClock} />
-        <br/>
+        <Time format={formatClock} style={styleClock} onChange={updateRefMinuteAction} interval={30 * 1000} />
+        <br />
+        <Time format={formatHour} style={styleHour} onChange={updateRefHourAction} interval={60 * 1000} />
         <Locale style={styleLocale} />
         <Conditions />
       </Grid>
@@ -83,7 +84,10 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-  getWeatherAtLocaleAction: getWeatherAtLocale
+  getWeatherAtLocaleAction: getWeatherAtLocale,
+  updateRefDayAction: updateRefDay,
+  updateRefHourAction: updateRefHour,
+  updateRefMinuteAction: updateRefMinute
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Container)
