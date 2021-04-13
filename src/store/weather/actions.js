@@ -2,6 +2,7 @@ import * as types from './types'
 import * as helpers from './helpers'
 import axios from 'axios'
 import { MOCK_RESPONSE_AMBILOBE, MOCK_RESPONSE_DEFAULT } from './mockReponse'
+import { getHourlyForecasts, getHourlyIndex, getLat, getLon, getName } from './lenses'
 
 const USE_MOCK_DATA = process.env.REACT_APP_USE_MOCK_DATA === 'true' || process.env.REACT_APP_USE_MOCK_DATA === true
 
@@ -10,12 +11,16 @@ const DEFAULT_LAT = process.env.REACT_APP_DEFAULT_LAT
 const DEFAULT_LON = process.env.REACT_APP_DEFAULT_LON
 
 
-export const changePhase = (phase) => (dispatch) => {
+export const changePhase = (phase) => (dispatch, getState) => {
+  let heldState = getState()
+  let main = getName(heldState)
+
+
   dispatch({
     type: types.CHANGE_PHASE,
     payload: {
       timeOfDay: phase,
-      image: helpers.mapImageByDesc({desc: 'Clear', phase})
+      image: helpers.mapImageByDesc({ desc: main, phase }) // TODO - set desc from redux state OR from new API response
     }
   })
 }
@@ -72,4 +77,27 @@ export const getWeatherAtLocale = (location) => (dispatch) => {
         })
       })
   }
+}
+
+export const getNextHourForecast = () => (dispatch, getState) => {
+  let heldState = getState()
+  let nextHourIndex = getHourlyIndex(heldState.weather) + 1
+  let hourlyForecasts = getHourlyForecasts(heldState.weather)
+  if (!hourlyForecasts) return
+  let nextHourForecast = hourlyForecasts[nextHourIndex]
+  if (nextHourForecast) {
+    dispatch({
+      type: types.UPDATE_CURRENT_FORECAST,
+      payload: { ...nextHourForecast, hourlyIndex: nextHourIndex }
+    })
+  } else {
+    getWeatherAtLocale(DEFAULT_CITY)(dispatch, getState) //TODO - latLon?  current city?
+  }
+}
+
+export const updateCurrentForecast = (forecast) => (dispatch)=> {
+  dispatch({
+    type: types.UPDATE_CURRENT_FORECAST,
+    payload: forecast
+  })
 }

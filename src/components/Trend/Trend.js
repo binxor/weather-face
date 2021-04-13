@@ -22,14 +22,12 @@ const Trend = (props) => {
   useEffect(() => {
     if (hourlyForecasts && hourlyForecasts.length > 0) {
       setData(R.pluck(metric, hourlyForecasts))
-      setStyle({ 'strokeWidth': '3px', 'fill': 'none' })
       setLineColor(color)
     }
-
   }, [ color, hourlyForecasts ])
 
   const [ data, setData ] = useState([])
-  const [ style, setStyle ] = useState(NO_DATA_LINE_STYLE)
+  const [ style, setStyle ] = useState(DATA_LINE_STYLE)
   const [ lineColor, setLineColor ] = useState('grey')
 
 

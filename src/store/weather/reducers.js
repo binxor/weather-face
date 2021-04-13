@@ -31,6 +31,12 @@ const reducer = (state = initialState, action) => {
         ...state,
         indicators: action.payload
       }
+    case types.UPDATE_CURRENT_FORECAST:
+      let updatedForecast = action.payload
+      return {
+        ...state,
+        ...updatedForecast
+      }
     case types.WEATHER_REQUEST:
       return {
         ...state,

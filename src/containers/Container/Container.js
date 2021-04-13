@@ -11,7 +11,7 @@ import '../App/App.css'
 import Intensity from '../../components/Intensity/Intensity'
 import Trend from '../../components/Trend/Trend'
 import { getWeatherAtLocale } from '../../store/weather/actions'
-import { updateRefDay, updateRefHour, updateRefMinute } from '../../store/app/actions'
+import { updateRefDay, updateRefHour, updateRefMinute, updateRefSecond } from '../../store/app/actions'
 import { getReferenceDay, getReferenceHour } from '../../store/app/lenses'
 import Time from '../../components/Time/Time'
 import Locale from '../../components/Locale/Locale'
@@ -21,40 +21,30 @@ const DEFAULT_CITY = process.env.REACT_APP_DEFAULT_CITY
 const Container = (props) => {
   const {
     getWeatherAtLocaleAction, IS_MOBILE,
-    referenceDay, referenceHour, updateRefDayAction, updateRefHourAction, updateRefMinuteAction
+    referenceDay, referenceHour, updateRefDayAction, updateRefHourAction, updateRefMinuteAction, updateRefSecondAction
   } = props
   const useStyles = (() => makeStyles({}))
 
-  useEffect(() => {
-    if (referenceDay) {
-      console.log('referenceDay updated to ', referenceDay)
-    }
-  }, [ referenceDay ])
 
-  useEffect(() => {
-    if (referenceHour) {
-      // TODO - update "current" forecast to next in `forecast.hourly` 
-      console.log('referenceHour updated to ', referenceHour)
-    }
-  }, [ referenceHour ])
 
   const classes = useStyles()
   const formatClock = 'HH:mm'
-  const formatHour = 'HH'
   const formatDate = 'ddd, MMM DD'
+  const formatHour = 'HH'
+  const formatSecond = 'ss'
   const styleClock = { font: 'consolas', fontSize: '3.8rem', marginTop: '0%' }
   const styleDate = { fontSize: '1.8rem' }
-  const styleHour = { display: 'none' }
+  const styleHidden = { display: 'none' }
   const styleLocale = {}
 
   return (
     <Grid container direction="row" justify="space-evenly" alignItems="stretch" className={'padded'}>
       <Grid item sm={6} xs={12} className={[ JSON.stringify('highlight', 'padded') ]}>
-        <Time format={formatDate} style={styleDate} onChange={updateRefDayAction} interval={60 * 60 * 1000} />
+        <Time format={formatDate} style={styleDate} interval={60 * 60 * 1000} />
         <br />
-        <Time format={formatClock} style={styleClock} onChange={updateRefMinuteAction} interval={30 * 1000} />
+        <Time format={formatClock} style={styleClock} interval={5 * 1000} />
         <br />
-        <Time format={formatHour} style={styleHour} onChange={updateRefHourAction} interval={60 * 1000} />
+        <Time format={formatHour} style={styleHidden} interval={60 * 1000} />
         <Locale style={styleLocale} />
         <Conditions />
       </Grid>
@@ -87,7 +77,7 @@ const mapDispatchToProps = {
   getWeatherAtLocaleAction: getWeatherAtLocale,
   updateRefDayAction: updateRefDay,
   updateRefHourAction: updateRefHour,
-  updateRefMinuteAction: updateRefMinute
+  updateRefMinuteAction: updateRefMinute,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Container)

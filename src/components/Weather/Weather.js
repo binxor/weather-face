@@ -18,7 +18,6 @@ const Weather = (props) => {
   const classes = useStyles()
 
   useEffect(() => {
-    console.log({ name, displayName })
     if (cloudiness > 0 && name === 'Clouds') {
       setCloudPc(cloudiness)
     }

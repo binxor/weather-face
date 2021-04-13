@@ -10,7 +10,7 @@ const AMBILOBE_LAT = process.env.REACT_APP_AMBILOBE_LAT
 const AMBILOBE_LON = process.env.REACT_APP_AMBILOBE_LON
 
 // TODO - add additional atmo conditions
-const IMAGE_MAP = {
+export const IMAGE_MAP = {
   dawn: {
     clear: [ 'dawn-clear-2' ],
     cloudy: [ 'dawn-clear-1' ],
@@ -189,6 +189,7 @@ const formatResponseCurrentForecast = (data) => {
         hourly: [],
         daily: []
       },
+      hourlyIndex: 1,
       iconUrl: buildOWMIconUrl(data.current.weather[ 0 ].icon), // TODO - replace these icons
       image: mapImageByDesc({ desc: data.current.weather[ 0 ].main, phase: timeOfDay }),
       indicators: generateIndicators({ data }),
@@ -288,7 +289,7 @@ export const generateUrl = (locale) => {
   return LOCAL_PROXY.replace('{LAT}', lat).replace('{LON}', lon)
 }
 
-export const calculatePhase = ({ toSunset, toSunrise }) => {
+export const calculatePhase = ({ toSunset, toSunrise, forecastedTimestamp }) => {
   let phase
   let x = 1
   if (toSunrise > 40 * x) phase = 'night'
@@ -303,14 +304,9 @@ export const calculatePhase = ({ toSunset, toSunrise }) => {
 }
 
 export const calculateForcastedTimeOfDay = ({ pointInTimeMs, sunriseMs, sunsetMs, useMilliseconds }) => {
-  let now = pointInTimeMs, sunrise = sunriseMs, sunset = sunsetMs
-  let phase
-  let threshold = 20000
-  if (now > sunset + threshold) phase = 'night'
-  else if (now >= sunset - threshold) phase = 'sunset'
-  else if (now > sunrise + threshold) phase = 'day'
-  else if (now >= sunrise - threshold) phase = 'sunrise'
-  else phase = 'night'
+  const toSunrise = (sunriseMs - pointInTimeMs) / 60000
+  const toSunset = (sunsetMs - pointInTimeMs) / 60000
+  let phase = calculatePhase({ toSunset, toSunrise, forecastedTimestamp: pointInTimeMs })
   return phase
 }
 
@@ -342,7 +338,7 @@ export const mapIcon = (lux) => {
   return icon
 }
 
-const mapConditions = (desc) => {
+export const mapConditions = (desc) => {
   let useCondition = ''
   if (!Object.keys(CONDITION_MAP).includes(desc)) useCondition = 'default'
   else {
@@ -351,7 +347,7 @@ const mapConditions = (desc) => {
   return useCondition
 }
 
-const mapPhase = (phase) => {
+export const mapPhase = (phase) => {
   let usePhase = ''
   if (!KNOWN_PHASES.includes(phase)) usePhase = 'default'
   else {

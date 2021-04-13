@@ -15,6 +15,10 @@ export const getDisplayName = (state) => R.view(displayNameL(), state)
 export const forecastL = () => R.lensProp('forecast')
 export const getForecast = (state) => R.view(forecastL(), state)
 
+export const hourlyIndexL = () => R.lensProp('hourlyIndex')
+export const getHourlyIndex = (state) => R.view(hourlyIndexL(), state)
+export const setHourlyIndex = (val, state) => R.set(hourlyIndexL(), val, state)
+
 export const humidityL = () => R.lensProp('humidity')
 export const getHumidity = (state) => R.view(humidityL(), state)
 
@@ -30,8 +34,14 @@ export const getImage = (state) => R.view(imageL(), state)
 export const indicatorsL = () => R.lensProp('indicators')
 export const getIndicators = (state) => R.view(indicatorsL(), state)
 
+export const latL = () => R.lensProp('lat')
+export const getLat = (state) => R.view(latL(), state)
+
 export const localeL = () => R.lensProp('locale')
 export const getLocale = (state) => R.view(localeL(), state)
+
+export const lonL = () => R.lensProp('lon')
+export const getLon = (state) => R.view(lonL(), state)
 
 export const luxL = () => R.lensProp('lux')
 export const getLux = (state) => R.view(luxL(), state)
@@ -73,8 +83,11 @@ export const getWindSpeed = (state) => R.view(windSpeedL(), state)
 export const hourlyForecastsL = () => R.compose(forecastL(), R.lensProp('hourly'))
 export const getHourlyForecasts = (state) => R.view(hourlyForecastsL(), state)
 
-export const temperatureIndicatorL = () => R.compose(indicatorsL(), R.lensProp('temperature'))
-export const getTemperatureIndicator = (state) => R.view(temperatureIndicatorL(), state)
+export const hourlyForecastAtIndexL = (index) => R.compose(hourlyForecastsL(), R.lensIndex(index))
+export const getHourlyForecastAtIndex = (index, state) => R.view(hourlyForecastAtIndexL(index), state)
 
 export const humidityIndicatorL = () => R.compose(indicatorsL(), R.lensProp('humidity'))
 export const getHumidityIndicator = (state) => R.view(humidityIndicatorL(), state)
+
+export const temperatureIndicatorL = () => R.compose(indicatorsL(), R.lensProp('temperature'))
+export const getTemperatureIndicator = (state) => R.view(temperatureIndicatorL(), state)

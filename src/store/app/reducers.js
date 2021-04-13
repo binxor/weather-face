@@ -18,32 +18,28 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case types.SET_REFERENCE_DAY:
-      let day = action.payload ? action.payload : moment().format('DD')
+      let day = action.payload.day ? action.payload.day : moment(action.payload).format('DD')
       return {
         ...state,
         ...setReferenceDay(day, state)
       }
     case types.SET_REFERENCE_HOUR:
-      let hour = action.payload ? action.payload : moment().format('HH')
+      let hour = action.payload.hour ? action.payload.hour : moment(action.payload).format('HH')
       return {
         ...state,
         ...setReferenceHour(hour, state)
       }
     case types.SET_REFERENCE_MINUTE:
-      let minute = action.payload ? action.payload : moment().format('mm')
+      let minute = action.payload.minute ? action.payload.minute : moment(action.payload).format('mm')
       return {
         ...state,
         ...setReferenceMinute(minute, state)
       }
     case types.SET_REFERENCE_SECOND:
-      let second = action.payload ? action.payload : moment().format('ss')
+      let second = action.payload.second ? action.payload.second : moment(action.payload).format('ss')
       return {
         ...state,
         ...setReferenceSecond(second, state)
-      }
-    case types.UPDATE_CURRENT_FORECAST:
-      return {
-        ...state
       }
     default:
       return state

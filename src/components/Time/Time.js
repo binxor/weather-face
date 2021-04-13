@@ -9,12 +9,9 @@ const Time = (props) => {
   const [ localeTimezone, setLocaleTimezone ] = useState(timeZone)
   const [ timeFormat, setTimeFormat ] = useState(format || 'HH:mm:ss')
 
-  useEffect(() => {
-    if (timeZone) setLocaleTimezone(timeZone)
-  }, [ timeZone ])
 
   return (
-    <Clock format={timeFormat} ticking={true} timezone={localeTimezone} {...other} />
+    <Clock format={timeFormat} ticking={true} timezone={timeZone} {...other} />
   )
 }
 
