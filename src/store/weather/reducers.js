@@ -13,12 +13,30 @@ const initialState = { //TODO - populate from source
   temperature: 0,
   uvi: 0,
   completedRequest: false,
-  useMockData: USE_MOCK_DATA
+  useMockData: USE_MOCK_DATA,
   // TODO - initialize additional metrics
+  timeOfDay: '',
 }
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case types.CHANGE_PHASE:
+      return {
+        ...state,
+        timeOfDay: action.payload.timeOfDay,
+        image: action.payload.image,
+      }
+    case types.UPDATE_INDICATORS:
+      return {
+        ...state,
+        indicators: action.payload
+      }
+    case types.UPDATE_CURRENT_FORECAST:
+      let updatedForecast = action.payload
+      return {
+        ...state,
+        ...updatedForecast
+      }
     case types.WEATHER_REQUEST:
       return {
         ...state,

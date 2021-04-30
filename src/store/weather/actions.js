@@ -2,6 +2,7 @@ import * as types from './types'
 import * as helpers from './helpers'
 import axios from 'axios'
 import { MOCK_RESPONSE_AMBILOBE, MOCK_RESPONSE_DEFAULT } from './mockReponse'
+import { getHourlyForecasts, getHourlyIndex, getLat, getLon, getName } from './lenses'
 
 const USE_MOCK_DATA = process.env.REACT_APP_USE_MOCK_DATA === 'true' || process.env.REACT_APP_USE_MOCK_DATA === true
 
@@ -10,26 +11,17 @@ const DEFAULT_LAT = process.env.REACT_APP_DEFAULT_LAT
 const DEFAULT_LON = process.env.REACT_APP_DEFAULT_LON
 
 
-export const getWeather = () => (dispatch) => {
-  let response = {
-    brightness: '-',
-    humidity: 29.77,
-    icon: 'CLEAR_DAY',
-    lux: 1580.65,
-    name: 'Sunny',
-    pressure: 0.99,
-    temperature: 83.41,
-    uvi: 0.05
-  }
+export const changePhase = (phase) => (dispatch, getState) => {
+  let heldState = getState()
+  let main = getName(heldState)
 
-  response.brightness = helpers.mapBrightness(response.lux)
-  response.name = 'MOCK ' + helpers.mapBrightness(response.lux)
-  response.icon = helpers.mapIcon(response.lux)
-  response.image = helpers.mapImage(response.lux)
 
   dispatch({
-    type: types.WEATHER_REQUEST,
-    payload: response
+    type: types.CHANGE_PHASE,
+    payload: {
+      timeOfDay: phase,
+      image: helpers.mapImageByDesc({ desc: main, phase }) // TODO - set desc from redux state OR from new API response
+    }
   })
 }
 
@@ -56,7 +48,7 @@ export const getWeatherAtLocale = (location) => (dispatch) => {
         break
     }
 
-    const formattedData = helpers.formatWeatherData(data)
+    const formattedData = helpers.formatResponseWeatherData(data)
 
     dispatch({
       type: types.WEATHER_REQUEST_SUCCESS,
@@ -70,7 +62,7 @@ export const getWeatherAtLocale = (location) => (dispatch) => {
     return axios.get(url)
       .then((res) => {
         // TODO - acount for bad response from PROXY-WEATHER_API
-        const formattedData = helpers.formatWeatherData(res)
+        const formattedData = helpers.formatResponseWeatherData(res)
         dispatch({
           type: types.WEATHER_REQUEST_SUCCESS,
           payload: { ...formattedData, locale: location }
@@ -85,4 +77,27 @@ export const getWeatherAtLocale = (location) => (dispatch) => {
         })
       })
   }
+}
+
+export const getNextHourForecast = () => (dispatch, getState) => {
+  let heldState = getState()
+  let nextHourIndex = getHourlyIndex(heldState.weather) + 1
+  let hourlyForecasts = getHourlyForecasts(heldState.weather)
+  if (!hourlyForecasts) return
+  let nextHourForecast = hourlyForecasts[nextHourIndex]
+  if (nextHourForecast) {
+    dispatch({
+      type: types.UPDATE_CURRENT_FORECAST,
+      payload: { ...nextHourForecast, hourlyIndex: nextHourIndex }
+    })
+  } else {
+    getWeatherAtLocale(DEFAULT_CITY)(dispatch, getState) //TODO - latLon?  current city?
+  }
+}
+
+export const updateCurrentForecast = (forecast) => (dispatch)=> {
+  dispatch({
+    type: types.UPDATE_CURRENT_FORECAST,
+    payload: forecast
+  })
 }

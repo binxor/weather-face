@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
-import { getTemperature } from '../../store/weather/lenses'
+import { CallMade } from '@material-ui/icons'
+import { getTemperature, getTemperatureIndicator } from '../../store/weather/lenses'
 
 const useStyles = makeStyles(theme => ({
   text: {
@@ -11,17 +12,28 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Temperature = (props) => {
-  const { temperature } = props
+  const { temperature, temperatureIndicator } = props
 
   const classes = useStyles()
+  const [ style, setStyle ] = useState({})
+
+  useEffect(() => {
+    if (temperatureIndicator === 'up') setStyle({})
+    if (temperatureIndicator === 'down') setStyle({ transform: 'scaleY(-1)' })
+  }, [ temperatureIndicator ])
 
   return (
-    <div className={classes.text}>{temperature}<small>°</small></div>
+    <div className={classes.text}>
+      {temperature}
+      <small>°  </small>
+      {temperatureIndicator && <CallMade style={style} />}
+    </div>
   )
 }
 
 const mapStateToProps = (state) => ({
-  temperature: getTemperature(state.weather)
+  temperature: getTemperature(state.weather),
+  temperatureIndicator: getTemperatureIndicator(state.weather)
 })
 
 const mapDispatchToProps = {
